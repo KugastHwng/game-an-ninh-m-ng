@@ -25,10 +25,12 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 .tower { width:120px; height:150px; border-radius:20px 20px 0 0; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; cursor:pointer; position:relative; box-shadow:0 8px 20px rgba(0,0,0,0.25); transition:0.3s; }
 .tower:hover { transform: scale(1.05); }
 .roof { width:120px; height:40px; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); margin-bottom:0; box-shadow:0 4px 10px rgba(0,0,0,0.3); }
+
 #tower1 { background:#ffe5b4; } #tower1 .roof { background:#ff7f50; }
 #tower2 { background:#d0f0c0; } #tower2 .roof { background:#32cd32; }
 #tower3 { background:#c0d6f0; } #tower3 .roof { background:#1e90ff; }
 #tower4 { background:#f4c2c2; } #tower4 .roof { background:#ff4500; }
+
 .character { width:50px; height:50px; background:#ffeb3b; border-radius:50%; position:absolute; display:flex; align-items:center; justify-content:center; font-size:24px; z-index:5; transition:0.3s; }
 
 /* POPUP */
@@ -36,6 +38,7 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 .popup h2 { margin-top:0; color:#0077c8; }
 .popup button { width:100%; padding:12px; background:#00a8ff; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:5px; }
 .popup button:hover { background:#0077c8; }
+
 .tower.level1 { box-shadow:0 0 10px 3px gold; height:200px; }
 .tower.level2 { box-shadow:0 0 15px 5px orange; height:250px; }
 .tower.level3 { box-shadow:0 0 25px 8px red; height:300px; }
@@ -146,22 +149,32 @@ const introLines=["Bạn là 1 nhà thám hiểm internet...","Trong lúc thám 
 let lineIndex=0,charIndex=0;
 const introText=document.getElementById("introText");
 const nameBoxEl=document.getElementById("nameBox");
+
 function typeIntro(){
-  if(lineIndex<introLines.length){
-    if(charIndex<introLines[lineIndex].length){
-      introText.innerHTML+=introLines[lineIndex].charAt(charIndex);
-      charIndex++;
-      setTimeout(typeIntro,40);
-    }else{
-      introText.innerHTML+="<br><br>";
-      lineIndex++; charIndex=0;
-      setTimeout(typeIntro,500);
+  introText.innerHTML = ""; 
+  lineIndex=0; charIndex=0;
+
+  function typing(){
+    if(lineIndex<introLines.length){
+      if(charIndex<introLines[lineIndex].length){
+        introText.innerHTML+=introLines[lineIndex].charAt(charIndex);
+        charIndex++;
+        setTimeout(typing,40);
+      } else {
+        introText.innerHTML+="<br><br>";
+        lineIndex++; charIndex=0;
+        setTimeout(typing,500);
+      }
+    } else {
+      nameBoxEl.style.display="block";
     }
-  }else{
-    nameBoxEl.style.display="block";
   }
+
+  typing();
 }
-window.onload=typeIntro;
+
+// KHÔNG CHẠY INTRO KHI LOAD TRANG NỮA
+// window.onload = typeIntro;
 
 // --- NHẠC ---
 const bgMusic=document.getElementById("bgMusic");
@@ -177,7 +190,7 @@ document.addEventListener("click",()=>{
   }
 });
 
-// --- GAME DATA (ĐÃ RÚT GỌN CÒN 1 CÂU MỖI THÁP) ---
+// --- GAME DATA ---
 const towersData = {
   tower1: [{question: "Chọn mật khẩu mạnh.", answers: [{ text: "12345", correct: false },{ text: "Huy3#2025", correct: true },{ text: "abcdef", correct: false }]}],
   tower2: [{question: "Chọn mật khẩu có số và chữ viết hoa.", answers: [{ text: "Pass1234", correct: true },{ text: "abcdefg", correct: false },{ text: "Password", correct: false }]}],
@@ -280,6 +293,7 @@ const adviceQuestions=[
     {text:"mật khẩu",correct:true},
     {text:"email",correct:false},
     {text:"tên đăng nhập",correct:false}]}];
+
 let adviceIndex=0;
 function showAdviceGame(){ adviceIndex=0; showAdviceQuestion(); }
 function showAdviceQuestion(){
@@ -316,12 +330,12 @@ function showOutro(){
 function openTowerGuide(){
   document.getElementById('towerGuidePopup').style.display='flex';
 }
+
 function closeTowerGuide(){
   document.getElementById('towerGuidePopup').style.display='none';
+  typeIntro();  // << BẮT ĐẦU INTRO SAU KHI ẤN ĐÓNG
 }
 </script>
 
 </body>
 </html>
-
-
