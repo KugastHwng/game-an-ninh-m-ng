@@ -55,7 +55,7 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
   <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- === ÂM THANH ĐÚNG – SAI (THÊM MỚI) === -->
+<!-- === ÂM THANH ĐÚNG – SAI === -->
 <audio id="correctSound">
   <source src="correct.mp3" type="audio/mpeg">
 </audio>
@@ -63,7 +63,6 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 <audio id="wrongSound">
   <source src="wrong.mp3" type="audio/mpeg">
 </audio>
-<!-- ====================================== -->
 
 <!-- INTRO -->
 <div id="introContainer">
@@ -75,12 +74,37 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
   </div>
 </div>
 
-<!-- Hướng dẫn ngay trên tháp -->
-<div id="towerGuide">
+<!-- NÚT HIỂN THỊ HƯỚNG DẪN -->
+<div style="text-align:center; margin-top:10px;">
+  <button id="towerGuideBtn" style="padding:10px 16px; background:#00a8ff; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;" onclick="openTowerGuide()">Hướng dẫn Tháp</button>
+</div>
+
+<!-- POPUP HƯỚNG DẪN -->
+<div id="towerGuidePopup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:50; justify-content:center; align-items:center; padding:20px; display:flex;">
+  <div style="background:#fff; max-width:700px; width:100%; border-radius:12px; padding:20px; box-shadow:0 12px 35px rgba(0,0,0,0.35); overflow:auto; max-height:80vh;">
+    <h2 style="margin-top:0; color:#0077c8;">Hướng dẫn sử dụng — 4 tòa tháp</h2>
+    <p><strong>Mục tiêu:</strong> Trả lời đúng các câu hỏi để nâng cấp 4 tòa tháp lên mức tối đa.</p>
+    <ol style="text-align:left; padding-left:18px;">
+      <li><strong>Nhập tên:</strong> Nhập tên rồi nhấn <em>Bắt đầu</em>.</li>
+      <li><strong>Chọn tòa tháp:</strong> Nhấp vào tòa tháp bạn muốn trả lời.</li>
+      <li><strong>Trả lời 1 câu:</strong> Mỗi tháp chỉ có 1 câu hỏi, chọn 1 trong 3 đáp án.</li>
+      <li><strong>Nâng cấp :</strong> Nếu đúng, tháp sẽ đạt mức tối đa ngay.</li>
+      <li><strong>Thử lại khi sai:</strong> Nếu sai, có thông báo, bạn có thể thử lại.</li>
+      <li><strong>Hoàn thành trò chơi:</strong> Khi cả 4 tháp đều đạt mức tối đa, màn khác sẽ xuất hiện.</li>
+    </ol>
+    <p style="font-size:13px; color:#555; margin-top:10px;">Bạn có thể làm tháp theo bất kỳ thứ tự nào. Trò chơi sẽ đếm thời gian bạn chơi khi bạn nhấn bắt đầu.</p>
+    <div style="text-align:right; margin-top:12px;">
+      <button style="padding:10px 16px; background:#ff6b6b; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;" onclick="closeTowerGuide()">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hướng dẫn trên tháp -->
+<div id="towerGuide" style="display:none;">
   Chọn vào mỗi tòa tháp — mỗi tòa tượng trưng cho một tài khoản của Minh. Nhấp vào tháp để đặt mật khẩu mạnh!
 </div>
 
-<!-- GAME THÁP -->
+<!-- GAME -->
 <h1 id="gameTitle">Mini Game: Chọn mật khẩu mạnh để nâng cấp tháp</h1>
 <div class="game-area" id="gameArea">
   <div class="tower" id="tower1"><div class="roof"></div></div>
@@ -90,7 +114,7 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
   <div class="character" id="character">😊</div>
 </div>
 
-<!-- POPUP THÁP -->
+<!-- POPUP -->
 <div class="popup" id="popup">
   <h2 id="questionTitle">Chọn mật khẩu</h2>
   <div id="answers"></div>
@@ -103,13 +127,13 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
   <button id="nextGameBtn">Được thôi</button>
 </div>
 
-<!-- POPUP GAME LỜI KHUYÊN -->
+<!-- POPUP LỜI KHUYÊN -->
 <div class="popup" id="advicePopup">
   <h2 id="adviceQuestion">Câu hỏi</h2>
   <div id="adviceAnswers"></div>
 </div>
 
-<!-- OUTRO SCREEN -->
+<!-- OUTRO -->
 <div id="outroScreen">
   <h1 id="outroTitle" style="opacity:0; transition:opacity 1s;">Thank for playing!</h1>
   <p id="outroText" style="opacity:0; transition:opacity 1s;">Bạn đã hoàn thành trò chơi.Hãy chia sẻ cho bạn bè cùng chơi nhé.Hẹn gặp lại!</p>
@@ -139,36 +163,26 @@ function typeIntro(){
 }
 window.onload=typeIntro;
 
-// --- NHẠC + ÂM THANH ---
-const bgMusic = document.getElementById("bgMusic");
-const correctSound = document.getElementById("correctSound");
-const wrongSound = document.getElementById("wrongSound");
+// --- NHẠC ---
+const bgMusic=document.getElementById("bgMusic");
+const correctSound=document.getElementById("correctSound");
+const wrongSound=document.getElementById("wrongSound");
+let bgStart=false;
 
-let bgStart = false;
-
-document.addEventListener("click", () => {
-  if (!bgStart) {
-    bgMusic.volume = 0.5;
+document.addEventListener("click",()=>{
+  if(!bgStart){
+    bgMusic.volume=0.5;
     bgMusic.play().catch(()=>{});
-    bgStart = true;
+    bgStart=true;
   }
 });
 
-// --- GAME LOGIC ---
-let playerName="";
+// --- GAME DATA (ĐÃ RÚT GỌN CÒN 1 CÂU MỖI THÁP) ---
 const towersData = {
-  tower1:[{question:"Tầng 1: Chọn mật khẩu ít nhất 8 ký tự.", answers:[{text:"12345", correct:false},{text:"abcdef", correct:false},{text:"Huy3#2025", correct:true}]},
-          {question:"Tầng 2: Chọn mật khẩu ít nhất 8 ký tự + chữ hoa.", answers:[{text:"huy3#2025", correct:false},{text:"Hg#2025", correct:false},{text:"Qu4n#2025!", correct:true}]},
-          {question:"Tầng 3: Chọn mật khẩu ít nhất 8 ký tự + chữ hoa + ký tự đặc biệt.", answers:[{text:"Huyen2025", correct:false},{text:"Huyen#2025", correct:false},{text:"Huyen#2025!", correct:true}]}],
-  tower2:[{question:"Tầng 1: Chọn mật khẩu chứa ít nhất 1 số.", answers:[{text:"abcdefg", correct:false},{text:"Password", correct:false},{text:"Pass1234", correct:true}]},
-          {question:"Tầng 2: Chọn mật khẩu ≥8 ký tự + số + chữ hoa.", answers:[{text:"pass1234", correct:false},{text:"Password1", correct:false},{text:"Pass#1234", correct:true}]},
-          {question:"Tầng 3: Chọn mật khẩu ≥8 ký tự + số + chữ hoa + ký tự đặc biệt.", answers:[{text:"Password1", correct:false},{text:"Pass#1234", correct:false},{text:"Pass#1234word!", correct:true}]}],
-  tower3:[{question:"Tầng 1: Chọn mật khẩu chứa chữ cái thường và số.", answers:[{text:"1234567", correct:false},{text:"ABCDEFG", correct:false},{text:"AbcDef@1235", correct:true}]},
-          {question:"Tầng 2: Chọn mật khẩu ≥8 ký tự + chữ thường + chữ hoa + số.", answers:[{text:"abcdef12", correct:false},{text:"Joy!boy@213", correct:true},{text:"Adefen24", correct:false}]},
-          {question:"Tầng 3: Chọn mật khẩu ≥8 ký tự + chữ hoa + chữ thường + số + ký tự đặc biệt.", answers:[{text:"isekai@422", correct:false},{text:"Abcdef#12", correct:false},{text:"Abc#1234", correct:true}]}],
-  tower4:[{question:"Tầng 1: Chọn mật khẩu gồm ít nhất 8 ký tự.", answers:[{text:"1234567", correct:false},{text:"abcdefg", correct:false},{text:"SafePassw1", correct:true}]},
-          {question:"Tầng 2: Chọn mật khẩu ≥8 ký tự + chữ hoa.", answers:[{text:"safepass1", correct:false},{text:"antoan2", correct:false},{text:"Safe#Pass2%", correct:true}]},
-          {question:"Tầng 3: Chọn mật khẩu ≥8 ký tự + chữ hoa + ký tự đặc biệt.", answers:[{text:"antoan@2", correct:false},{text:"Mat@khaukho!2", correct:false},{text:"Safe#Pass200%!", correct:true}]}]
+  tower1: [{question: "Chọn mật khẩu mạnh.", answers: [{ text: "12345", correct: false },{ text: "Huy3#2025", correct: true },{ text: "abcdef", correct: false }]}],
+  tower2: [{question: "Chọn mật khẩu có số và chữ viết hoa.", answers: [{ text: "Pass1234", correct: true },{ text: "abcdefg", correct: false },{ text: "Password", correct: false }]}],
+  tower3: [{question: "Chọn mật khẩu có chữ hoa, chữ thường,số và ký tự đặc biệt.", answers: [{ text: "ABCDEFG", correct: false },{ text: "1234567", correct: false },{ text: "Hoctap@1235", correct: true }]}],
+  tower4: [{question: "Chọn mật khẩu đủ 8 ký tự trở lên.", answers: [{ text: "12a424a", correct: false },{ text: "SafePassw1", correct: true },{ text: "chamchi@!", correct: false }]}]
 };
 
 const towers=document.querySelectorAll('.tower');
@@ -191,7 +205,6 @@ let currentLevel={tower1:0,tower2:0,tower3:0,tower4:0};
 
 function startGame(){
   const nameInput=document.getElementById('playerName').value;
-  if(nameInput.trim()!=="") playerName=nameInput;
   document.getElementById('introContainer').style.display="none";
   towerGuide.style.display="block";
   gameTitle.style.display="block";
@@ -204,7 +217,7 @@ towers.forEach(tower=>{
     const rect=tower.getBoundingClientRect();
     const areaRect=gameArea.getBoundingClientRect();
     const x=rect.left-areaRect.left+rect.width/2-character.offsetWidth/2;
-    const y=-character.offsetHeight; 
+    const y=-character.offsetHeight;
     character.style.left=x+'px';
     character.style.top=y+'px';
     showTowerQuestion(currentTower);
@@ -213,11 +226,8 @@ towers.forEach(tower=>{
 
 function showTowerQuestion(towerId){
   const level=currentLevel[towerId];
-  if(level>=3){
-    checkAllTowersCompleted();
-    return;
-  }
-  const q=towersData[towerId][level];
+  if(level>=1){ checkAllTowersCompleted(); return; }
+  const q=towersData[towerId][0];
   questionTitle.textContent=q.question;
   answersDiv.innerHTML="";
   q.answers.forEach(ans=>{
@@ -231,81 +241,49 @@ function showTowerQuestion(towerId){
 
 function checkTowerAnswer(isCorrect){
   if(isCorrect){
-    correctSound.currentTime = 0;
-    correctSound.play();
-
+    correctSound.currentTime=0; correctSound.play();
     alert("Chọn đúng! Tháp được nâng cấp 🎉");
     const towerEl=document.getElementById(currentTower);
-    currentLevel[currentTower]++;
-    towerEl.classList.remove("level1","level2","level3");
-    towerEl.classList.add("level"+currentLevel[currentTower]);
-
-    if(currentLevel[currentTower]>=3){
-      alert("Tháp đã đạt tối đa!");
-    }
-  } else { 
-    wrongSound.currentTime = 0;
-    wrongSound.play();
-    alert("Mật khẩu yếu, thử lại 😢"); 
-  }
+    currentLevel[currentTower]=3;
+    towerEl.classList.add("level3");
+  } else { wrongSound.currentTime=0; wrongSound.play(); alert("Mật khẩu yếu, thử lại 😢"); }
   popup.style.display='none';
   checkAllTowersCompleted();
 }
 
 function checkAllTowersCompleted(){
-  const allMax=Object.values(currentLevel).every(l=>l>=3);
-  if(allMax && finalPopup.style.display!=='block'){
-    finalPopup.style.display='block';
-  }
+  const allDone=Object.values(currentLevel).every(l=>l>=1);
+  if(allDone){ finalPopup.style.display='block'; }
 }
 
-document.getElementById('nextGameBtn').onclick=()=>{
-  finalPopup.style.display='none';
-  showAdviceGame();
-}
+document.getElementById('nextGameBtn').onclick=()=>{ finalPopup.style.display='none'; showAdviceGame(); };
 
-// --- GAME 5 CÂU LỜI KHUYÊN ---
+// ---- GAME LỜI KHUYÊN ----
 const adviceQuestions=[
-  {q: "Khi đặt mật khẩu, bạn cần ___ để bảo mật tốt hơn.", answers:[
-      {text:"sử dụng chữ hoa, chữ thường, số và ký tự đặc biệt", correct:true},
-      {text:"chỉ dùng số", correct:false},
-      {text:"dùng tên mình", correct:false}
-    ]},
-  {q: "Mật khẩu nên có ít nhất ___ ký tự.", answers:[
-      {text:"4 ký tự", correct:false},
-      {text:"8 ký tự", correct:true},
-      {text:"2 ký tự", correct:false}
-    ]},
-  {q: "Không nên sử dụng ___ trong mật khẩu.", answers:[
-      {text:"tên người thân hoặc ngày sinh", correct:true},
-      {text:"ký tự đặc biệt", correct:false},
-      {text:"chữ và số", correct:false}
-    ]},
-  {q: "Nên thay đổi mật khẩu ___ để tránh bị hack.", answers:[
-      {text:"thường xuyên", correct:true},
-      {text:"không bao giờ", correct:false},
-      {text:"chỉ khi bị quên", correct:false}
-    ]},
-  {q: "Không nên sử dụng ___ giống nhau cho nhiều tài khoản.", answers:[
-      {text:"mật khẩu", correct:true},
-      {text:"email", correct:false},
-      {text:"tên đăng nhập", correct:false}
-    ]}
-];
-
+  {q:"Khi đặt mật khẩu, bạn cần ___ để bảo mật tốt hơn.",answers:[
+    {text:"sử dụng chữ hoa, chữ thường, số và ký tự đặc biệt",correct:true},
+    {text:"chỉ dùng số",correct:false},
+    {text:"dùng tên mình",correct:false}]},
+  {q:"Mật khẩu nên có ít nhất ___ ký tự.",answers:[
+    {text:"4 ký tự",correct:false},
+    {text:"8 ký tự",correct:true},
+    {text:"2 ký tự",correct:false}]},
+  {q:"Không nên sử dụng ___ trong mật khẩu.",answers:[
+    {text:"tên người thân hoặc ngày sinh",correct:true},
+    {text:"ký tự đặc biệt",correct:false},
+    {text:"chữ và số",correct:false}]},
+  {q:"Nên thay đổi mật khẩu ___ để tránh bị hack.",answers:[
+    {text:"không bao giờ",correct:false},
+    {text:"thường xuyên",correct:true},
+    {text:"chỉ khi bị quên",correct:false}]},
+  {q:"Không nên sử dụng ___ giống nhau cho nhiều tài khoản.",answers:[
+    {text:"mật khẩu",correct:true},
+    {text:"email",correct:false},
+    {text:"tên đăng nhập",correct:false}]}];
 let adviceIndex=0;
-
-function showAdviceGame(){ 
-  adviceIndex=0; 
-  showAdviceQuestion(); 
-}
-
+function showAdviceGame(){ adviceIndex=0; showAdviceQuestion(); }
 function showAdviceQuestion(){
-  if(adviceIndex >= adviceQuestions.length){
-    advicePopup.style.display='none';
-    showOutro();
-    return;
-  }
+  if(adviceIndex>=adviceQuestions.length){ advicePopup.style.display='none'; showOutro(); return; }
   const q=adviceQuestions[adviceIndex];
   adviceQuestionEl.textContent=q.q;
   adviceAnswersDiv.innerHTML="";
@@ -313,16 +291,8 @@ function showAdviceQuestion(){
     const btn=document.createElement('button');
     btn.textContent=ans.text;
     btn.onclick=()=>{
-      if(ans.correct){
-        correctSound.currentTime = 0;
-        correctSound.play();
-        alert("Chọn đúng! 🎉");
-        adviceIndex++; 
-      } else {
-        wrongSound.currentTime = 0;
-        wrongSound.play();
-        alert("Sai, thử lại 😢");
-      }
+      if(ans.correct){ correctSound.currentTime=0; correctSound.play(); alert("Chọn đúng! 🎉"); adviceIndex++; }
+      else{ wrongSound.currentTime=0; wrongSound.play(); alert("Sai, thử lại 😢"); }
       showAdviceQuestion();
     };
     adviceAnswersDiv.appendChild(btn);
@@ -341,7 +311,17 @@ function showOutro(){
   setTimeout(()=>document.getElementById('outroText').style.opacity=1,1100);
   setTimeout(()=>outroChar.style.opacity=1,2100);
 }
+
+// --- HƯỚNG DẪN THÁP ---
+function openTowerGuide(){
+  document.getElementById('towerGuidePopup').style.display='flex';
+}
+function closeTowerGuide(){
+  document.getElementById('towerGuidePopup').style.display='none';
+}
 </script>
 
 </body>
 </html>
+
+
