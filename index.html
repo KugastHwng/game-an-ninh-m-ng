@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini Game Full Version Không Âm Thanh</title>
+<title>Hành trình an toàn mạng</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background: linear-gradient(#6bd5ff, #b9f1ff); }
@@ -11,6 +11,8 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 /* INTRO */
 #introContainer,#outroScreen { width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px; box-sizing:border-box; }
 #outroScreen { display:none; flex-direction:column; justify-content:center; align-items:center; text-align:center; animation: bgFade 5s ease-in-out infinite; }
+
+#introText { max-width:800px; color:#004760; font-size:20px; line-height:1.6; }
 
 /* Name input */
 #nameBox { display:none; margin-top:20px; text-align:center; }
@@ -34,7 +36,7 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 .character { width:50px; height:50px; background:#ffeb3b; border-radius:50%; position:absolute; display:flex; align-items:center; justify-content:center; font-size:24px; z-index:5; transition:0.3s; }
 
 /* POPUP */
-.popup { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:20px; border-radius:15px; box-shadow:0 8px 25px rgba(0,0,0,0.35); display:none; z-index:10; width:350px; }
+.popup { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:20px; border-radius:15px; box-shadow:0 8px 25px rgba(0,0,0,0.35); display:none; z-index:10; width:350px; max-width:90vw; }
 .popup h2 { margin-top:0; color:#0077c8; }
 .popup button { width:100%; padding:12px; background:#00a8ff; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:5px; }
 .popup button:hover { background:#0077c8; }
@@ -42,6 +44,13 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 .tower.level1 { box-shadow:0 0 10px 3px gold; height:200px; }
 .tower.level2 { box-shadow:0 0 15px 5px orange; height:250px; }
 .tower.level3 { box-shadow:0 0 25px 8px red; height:300px; }
+
+/* small styles for video/quiz popups */
+#congratsPopup .line { margin:8px 0; color:#073b4c; }
+#videoPopup video { width:100%; height:auto; border-radius:8px; background:#000; }
+.quiz-answers { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+.quiz-answers button, .quiz-answers .submit-btn { width:100%; padding:10px; border-radius:8px; border:none; cursor:pointer; font-weight:600; }
+.checkbox-row { display:flex; flex-direction:column; gap:6px; margin-top:8px; text-align:left; }
 
 /* Gradient animation outro */
 @keyframes bgFade {
@@ -142,6 +151,39 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
   <p id="outroText" style="opacity:0; transition:opacity 1s;">Bạn đã hoàn thành trò chơi.Hãy chia sẻ cho bạn bè cùng chơi nhé.Hẹn gặp lại!</p>
   <div id="outroCharacter" style="width:80px; height:80px; background:#ffeb3b; border-radius:50%; margin-top:30px; display:flex; justify-content:center; align-items:center; font-size:36px; opacity:0; transition:opacity 1s;">😊</div>
 </div>
+
+<!-- ======= NEW: CONGRATS + VIDEO + QUIZ POPUPS (THÊM MỚI, KHÔNG SỬA GAME) ======= -->
+
+<!-- Congratulation popup (shown when showOutro is called) -->
+<div class="popup" id="congratsPopup" style="display:none; width:420px;">
+  <h2>Chúc mừng — Bạn đã hoàn thành trò chơi!</h2>
+  <p class="line">Bạn đã giúp Minh cải thiện bảo mật. Xem video ngắn để hiểu thêm tình huống lừa đảo.</p>
+  <button id="watchVideoBtn">Xem video hướng dẫn</button>
+  <button id="skipToQuizBtn" style="background:#ff6b6b; margin-top:8px;">Bỏ qua video — Trả lời câu hỏi</button>
+</div>
+
+<!-- Video popup -->
+<div class="popup" id="videoPopup" style="display:none; width:760px; max-width:95vw;">
+  <h2>Video minh họa tình huống lừa đảo</h2>
+  <video id="lessonVideo" controls>
+    <source src="video.mp4" type="video/mp4">
+    Trình duyệt của bạn không hỗ trợ thẻ video.
+  </video>
+  <button id="skipVideoBtn" style="margin-top:10px; background:#ff6b6b;">Bỏ qua video</button>
+</div>
+
+<!-- Quiz popup (4 câu hỏi) -->
+<div class="popup" id="quizPopup" style="display:none; width:600px; max-width:95vw;">
+  <h2 id="quizTitle">Bài kiểm tra nhanh</h2>
+  <div id="quizBody" style="margin-top:8px; text-align:left;">
+    <!-- Nội dung câu hỏi sẽ được chèn bằng JS -->
+  </div>
+  <div style="margin-top:12px;">
+    <button id="nextQuizBtn" style="background:#00a8ff;">Tiếp tục</button>
+  </div>
+</div>
+
+<!-- ========================================================================== -->
 
 <script>
 // --- INTRO ---
@@ -337,5 +379,260 @@ function closeTowerGuide(){
 }
 </script>
 
+<!-- ======= APPENDED SCRIPT: chúc mừng → video → quiz (KHÔNG SỬA GAME) ======= -->
+<script>
+/*
+  LƯU Ý: đoạn này chỉ "thêm" chức năng mới.
+  - Khi hàm showOutro() được gọi, nó sẽ hiển thị popup chúc mừng (mình ghi đè hàm runtime).
+  - Sau khi hoàn tất quiz, hàm showOutro gốc sẽ được gọi để hiển thị outro ban đầu.
+*/
+
+// Lưu hàm showOutro gốc
+const originalShowOutro = window.showOutro;
+
+// Nếu không tồn tại hàm gốc (trường hợp), đảm bảo originalShowOutro là null
+// (trong file gốc, showOutro luôn được định nghĩa nên originalShowOutro sẽ là function)
+if (typeof originalShowOutro !== 'function') {
+  // không có hàm gốc — define 1 hàm mặc định an toàn
+  window.showOutro = function(){
+    document.getElementById('outroScreen').style.display='flex';
+  };
+} else {
+  // GHI ĐÈ showOutro bằng 1 hàm mới, nhưng sẽ gọi originalShowOutro sau khi quiz xong
+  window.showOutro = function(){
+    // Hiện popup chúc mừng (mới)
+    document.getElementById('congratsPopup').style.display = 'block';
+  };
+}
+
+// DOM elements for new flow
+const congratsPopup = document.getElementById('congratsPopup');
+const watchVideoBtn = document.getElementById('watchVideoBtn');
+const skipToQuizBtn = document.getElementById('skipToQuizBtn');
+const videoPopup = document.getElementById('videoPopup');
+const lessonVideo = document.getElementById('lessonVideo');
+const skipVideoBtn = document.getElementById('skipVideoBtn');
+const quizPopup = document.getElementById('quizPopup');
+const quizBody = document.getElementById('quizBody');
+const nextQuizBtn = document.getElementById('nextQuizBtn');
+
+// Định nghĩa nội dung 4 câu hỏi theo yêu cầu (một số câu cho phép nhiều đáp án)
+const finalQuiz = [
+  {
+    id: 1,
+    type: 'single', // single-choice
+    q: 'Câu 1: Đâu "KHÔNG" phải là nguyên nhân khiến Minh bị lừa đảo qua mạng?',
+    options: [
+      'Tin tưởng vào bạn bè',
+      'Hấp tấp, thiếu suy nghĩ',
+      'Vì nhà Minh giàu'
+    ],
+    correctIndex: 2 // "Vì nhà Minh giàu" là đáp án đúng (không phải nguyên nhân)
+  },
+  {
+    id: 2,
+    type: 'multi', // multiple-choice (chọn tất cả thủ đoạn đã dùng)
+    q: 'Câu 2: Đối tượng lừa đảo đã sử dụng những thủ đoạn nào để khiến nhân vật tin là thật? (Chọn những câu đúng)',
+    options: [
+      'A. Giả mạo tài khoản bạn bè và nhắn tin với giọng điệu quen thuộc.',
+      'B. Tiếp cận nạn nhân làm quen và dần dần trở thành bạn bè để lừa đảo',
+      'C. Hối thúc nhân vật thực hiện nhanh để “không bỏ lỡ cơ hội”.'
+    ],
+    // Trong tình huống mô tả, cả A, B, C đều là thủ đoạn được sử dụng → nên tất cả đều đúng
+    correctIndexes: [0,1,2]
+  },
+  {
+    id: 3,
+    type: 'multi',
+    q: 'Câu 3: Sau khi bị lừa đảo, nhân vật đã gặp phải hậu quả gì? (Chọn những câu đúng)',
+    options: [
+      'Mất tiền',
+      'Lộ thông tin cá nhân, tài khoản mạng xã hội bị chiếm quyền.',
+      'Bị đe dọa, làm phiền hoặc tiếp tục bị nhắn tin lừa đảo.'
+    ],
+    // Tất cả đều là hậu quả khả dĩ → coi cả 3 là đúng
+    correctIndexes: [0,1,2]
+  },
+  {
+    id: 4,
+    type: 'multi',
+    q: 'Câu 4: Thông điệp của đoạn video trên là gì? (Chọn tất cả câu đúng)',
+    options: [
+      'Không nên tin tưởng tuyệt đối vào bất kỳ ai trên mạng, kể cả người quen.',
+      'Internet luôn an toàn nên có thể thoải mái chia sẻ thông tin cá nhân',
+      'Cảnh giác với đường link, quà tặng, ưu đãi được gửi đột ngột.'
+    ],
+    // Đáp án đúng: 1 và 3 (khuyến cáo cảnh giác; câu 2 sai)
+    correctIndexes: [0,2]
+  }
+];
+
+let quizIndex = 0;
+
+// Hàm hiển thị câu hỏi quiz hiện tại
+function renderQuizQuestion(){
+  const item = finalQuiz[quizIndex];
+  quizBody.innerHTML = '';
+  const title = document.createElement('div');
+  title.style.fontWeight = '700';
+  title.style.marginBottom = '8px';
+  title.textContent = item.q;
+  quizBody.appendChild(title);
+
+  if(item.type === 'single'){
+    const wrap = document.createElement('div');
+    wrap.className = 'quiz-answers';
+    item.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.textContent = opt;
+      btn.onclick = () => {
+        // kiểm tra
+        if(i === item.correctIndex){
+          correctSound.currentTime = 0; correctSound.play();
+          alert('Chính xác! 🎉');
+          quizIndex++;
+          if(quizIndex >= finalQuiz.length){
+            finishQuizFlow();
+          } else {
+            renderQuizQuestion();
+          }
+        } else {
+          wrongSound.currentTime = 0; wrongSound.play();
+          alert('Sai rồi, thử lại nhé 😢');
+        }
+      };
+      wrap.appendChild(btn);
+    });
+    quizBody.appendChild(wrap);
+    // nút next ẩn với câu single (bấm đáp án sẽ tự chuyển)
+    nextQuizBtn.style.display = 'none';
+  } else if(item.type === 'multi'){
+    // hiển thị checkbox + nút submit
+    const box = document.createElement('div');
+    box.className = 'checkbox-row';
+    item.options.forEach((opt, i) => {
+      const label = document.createElement('label');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.dataset.idx = i;
+      cb.style.marginRight = '8px';
+      label.appendChild(cb);
+      const span = document.createElement('span');
+      span.textContent = opt;
+      label.appendChild(span);
+      box.appendChild(label);
+    });
+    quizBody.appendChild(box);
+
+    // show submit button
+    nextQuizBtn.style.display = 'inline-block';
+    nextQuizBtn.textContent = 'Nộp đáp án';
+    // đảm bảo listener không bị đăng ký nhiều lần
+    nextQuizBtn.onclick = () => {
+      const checked = Array.from(box.querySelectorAll('input[type="checkbox"]:checked')).map(n=>parseInt(n.dataset.idx));
+      // sort for comparison
+      checked.sort((a,b)=>a-b);
+      const correct = item.correctIndexes.slice().sort((a,b)=>a-b);
+      // compare arrays
+      if(checked.length === correct.length && checked.every((v,i)=>v === correct[i])){
+        correctSound.currentTime = 0; correctSound.play();
+        alert('Chính xác! 🎉');
+        quizIndex++;
+        if(quizIndex >= finalQuiz.length){
+          finishQuizFlow();
+        } else {
+          renderQuizQuestion();
+        }
+      } else {
+        wrongSound.currentTime = 0; wrongSound.play();
+        alert('Chưa chính xác. Hãy kiểm tra lại và thử lại nhé 😢');
+      }
+    };
+  }
+}
+
+// Hoàn tất quiz → gọi outro gốc để hiển thị màn outro cũ
+function finishQuizFlow(){
+  // đóng quiz popup
+  quizPopup.style.display = 'none';
+  congratsPopup.style.display = 'none';
+  videoPopup.style.display = 'none';
+  // gọi showOutro gốc (originalShowOutro) nếu có
+  if (typeof originalShowOutro === 'function') {
+    // gọi lại hàm gốc để hiển thị outro mặc định
+    originalShowOutro();
+  } else {
+    // fallback: hiển thị outroScreen nếu không có hàm gốc
+    document.getElementById('outroScreen').style.display = 'flex';
+  }
+}
+
+// Sự kiện cho nút trên popup chúc mừng
+watchVideoBtn.onclick = () => {
+  congratsPopup.style.display = 'none';
+  // show video popup
+  videoPopup.style.display = 'block';
+  // reset video to start
+  try { lessonVideo.currentTime = 0; } catch(e){}
+  lessonVideo.play().catch(()=>{});
+};
+
+skipToQuizBtn.onclick = () => {
+  congratsPopup.style.display = 'none';
+  // Bắt đầu quiz trực tiếp
+  quizIndex = 0;
+  quizPopup.style.display = 'block';
+  renderQuizQuestion();
+};
+
+// Sự kiện cho nút bỏ qua video
+skipVideoBtn.onclick = () => {
+  try { lessonVideo.pause(); } catch(e){}
+  videoPopup.style.display = 'none';
+  quizIndex = 0;
+  quizPopup.style.display = 'block';
+  renderQuizQuestion();
+};
+
+// Khi video kết thúc → bắt đầu quiz
+lessonVideo.onended = () => {
+  videoPopup.style.display = 'none';
+  quizIndex = 0;
+  quizPopup.style.display = 'block';
+  renderQuizQuestion();
+};
+
+// Đóng tất cả popup khi nhấn ra ngoài (tuỳ chọn) — không bắt buộc
+// (Không gắn sự kiện đóng khi bấm ngoài để tránh vô tình đóng)
+
+// === TẠM DỪNG NHẠC NỀN KHI XEM VIDEO ===
+(function(){
+  try {
+    const bgMusicEl = document.getElementById('bgMusic');
+    const lessonVideoEl = document.getElementById('lessonVideo');
+    const skipVideoBtnEl = document.getElementById('skipVideoBtn');
+
+    if(!bgMusicEl || !lessonVideoEl || !skipVideoBtnEl) return;
+
+    // Khi video bắt đầu phát → tạm dừng nhạc nền
+    lessonVideoEl.addEventListener('play', () => {
+      try { bgMusicEl.pause(); } catch(e){}
+    });
+
+    // Khi video kết thúc → tiếp tục nhạc nền
+    lessonVideoEl.addEventListener('ended', () => {
+      try { bgMusicEl.play().catch(()=>{}); } catch(e){}
+    });
+
+    // Khi người bấm "Bỏ qua video" → tiếp tục nhạc nền
+    skipVideoBtnEl.addEventListener('click', () => {
+      try { bgMusicEl.play().catch(()=>{}); } catch(e){}
+    });
+
+  } catch(e){}
+})();
+</script>
+
 </body>
 </html>
+
