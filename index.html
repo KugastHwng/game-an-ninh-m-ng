@@ -75,10 +75,53 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
   100% { background: linear-gradient(#6bd5ff, #b9f1ff); }
 }
 </style>
+
+<style>
+#leaderboard table {
+  border-collapse: collapse;
+  width: 80%;
+  margin: 20px auto;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+#leaderboard th {
+  background: #4aa3ff;
+  color: white;
+  padding: 12px;
+  font-size: 18px;
+}
+#leaderboard td {
+  padding: 10px;
+  text-align: center;
+  font-size: 16px;
+}
+#leaderboard tr:nth-child(even) { background: #f2f7ff; }
+.medal { font-size:22px; }
+</style>
+
+
+<style>
+#top50Btn {
+ position: fixed;
+ top: 10px;
+ right: 10px;
+ padding: 6px 10px;
+ background:#007bff;
+ color:white;
+ border:none;
+ border-radius:8px;
+ font-size:14px;
+ display:none;
+ z-index:9999;
+}
+</style>
+
 </head>
 <body>
-<!-- QR GAME ONLINE -->
-<div id="qrGame" style="position:fixed; top:1px; right:1px; z-index:9999;">
+<button id='top50Btn' onclick='showTop50()'>TOP 50</button>
+<!-- QR GAME -->
+<div style="position:fixed; top:1px; right:1px; z-index:9999;">
   <img src="qr_game_link.png" style="width:60px; height:auto; border-radius:8px;">
 </div>
 
@@ -100,16 +143,20 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 <!-- INTRO -->
 <div id="introContainer">
   <div id="introText"></div>
-  <div id="nameBox">
-    <label>Nhập tên của bạn:</label><br>
-    <input id="playerName" type="text"><br>
-    <button onclick="startGame()">Bắt đầu</button>
-  </div>
+  
+<div id="nameBox" style="display:none; margin-top:20px; text-align:center;">
+  <label>Thông tin người chơi:</label><br><br>
+  <input id="playerName" type="text" placeholder="Họ và tên" style="padding:10px;border-radius:10px;margin:5px;"><br>
+  <input id="playerClass" type="text" placeholder="Lớp" style="padding:10px;border-radius:10px;margin:5px;"><br>
+  <input id="playerSchool" type="text" placeholder="Trường" style="padding:10px;border-radius:10px;margin:5px;"><br>
+  <button onclick="startGame()" style="padding:10px 20px;border-radius:10px;">Bắt đầu</button>
+</div>
+
 </div>
 
 <!-- NÚT HIỂN THỊ HƯỚNG DẪN -->
 <div style="text-align:center; margin-top:10px;">
-  <button id="towerGuideBtn" style="padding:10px 16px; background:#00a8ff; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;" onclick="openTowerGuide()">Hướng dẫn Tháp</button>
+  <button id="towerGuideBtn" style="padding:10px 16px; background:#00a8ff; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;" onclick="loadMyRank()">Hướng dẫn Tháp</button>
 </div>
 
 <!-- POPUP HƯỚNG DẪN -->
@@ -295,6 +342,10 @@ let currentTower=null;
 let currentLevel={tower1:0,tower2:0,tower3:0,tower4:0};
 
 function startGame(){
+  let name = document.getElementById('playerName').value.trim();
+  let cls = document.getElementById('playerClass').value.trim();
+  let school = document.getElementById('playerSchool').value.trim();
+  if(!name || !cls || !school){ alert("Vui lòng nhập đầy đủ tên, lớp, trường!"); return;}
   const nameInput=document.getElementById('playerName').value;
   document.getElementById('introContainer').style.display="none";
   towerGuide.style.display="block";
@@ -426,6 +477,18 @@ function finishQuizFlow(){
 
 // --- OUTRO ---
 function showOutro(){
+ document.getElementById("top50Btn").style.display="block";
+ const score=computeScore(window.correctAnswers||0, window.totalTime||0); window.playerScore=score;
+  // rename button
+  document.getElementById("towerGuideBtn").innerText = "Bảng xếp hạng";
+
+  setTimeout(()=>{ 
+    if(document.getElementById('leaderboard')) {
+      document.getElementById('leaderboard').style.display='block';
+      if(window.loadLeaderboard) loadLeaderboard();
+    }
+  }, 2500);  // show after outro animation
+
   advicePopup.style.display='none';
   gameArea.style.display='none';
   gameTitle.style.display='none';
@@ -450,6 +513,16 @@ function closeTowerGuide(){
 document.getElementById('storyOverlay').addEventListener('transitionstart',()=>{
   try{ document.getElementById('poster').style.display='none'; }catch(e){}
 });
+
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
 
 </script>
 
@@ -828,6 +901,16 @@ document.getElementById('startQuizBtn').onclick = () => {
     document.getElementById("poster").style.display = "none";
     showQuestion(); // gọi hàm hiển thị câu hỏi đầu tiên
 };
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
 </script>
 
 
@@ -946,8 +1029,8 @@ const superQuiz = [
     correct: 2 // index 2 = C
   },
   {
-    q: "2. Ở góc độ nhận thức sai lệch, chị A mắc phải lỗi nào khiến bản thân không còn giữ được tiêu chí kiểm chứng thông tin?",
-    options: ["A. (phóng đại hậu quả)", "B.(chú ý chọn lọc về phía rủi ro)", "C.  (phụ thuộc hướng dẫn bên ngoài để quyết định)", "D. (thiên kiến xác nhận)"],
+    q: "2. Ở góc độ nhận thức sai lệch (cognitive distortion), chị A mắc phải lỗi nào khiến bản thân không còn giữ được tiêu chí kiểm chứng thông tin?",
+    options: ["A. Catastrophizing (phóng đại hậu quả)", "B. Selective attention (chú ý chọn lọc về phía rủi ro)", "C. External validation trap (phụ thuộc hướng dẫn bên ngoài để quyết định)", "D. Confirmation bias (thiên kiến xác nhận)"],
     correct: 2 // C
   },
   {
@@ -961,7 +1044,7 @@ const superQuiz = [
     correct: 1 // B
   },
   {
-    q: "5. Chi tiết nào cho thấy chị A không còn hành động dựa trên thông tin khách quan mà dựa trên “áp lực khung cảnh”?",
+    q: "5. Chi tiết nào cho thấy chị A không còn hành động dựa trên thông tin khách quan mà dựa trên “áp lực khung cảnh” (contextual compulsion)?",
     options: [
       "A. Vào website giả mạo",
       "B. Nhập thông tin cá nhân",
@@ -1115,6 +1198,16 @@ if(typeof window.checkAnswer === 'function'){
     console.warn('checkAnswer not found - interaction fallback');
   };
 }
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
 </script>
 <!-- END: Poster congrats + story + super-quiz -->
 
@@ -1167,6 +1260,16 @@ document.querySelectorAll('#posterCongrats,#confirmStory,#storyBox,#superQuizBox
 // Darker overlays
 document.querySelectorAll('#posterCongratsOverlay,#confirmStoryOverlay,#storyOverlay,#superQuizPopup,#superQuizEnd')
   .forEach(el=>el.style.background='rgba(0,0,0,0.75)');
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
 </script>
 
 
@@ -1249,6 +1352,16 @@ document.querySelectorAll('#posterCongratsOverlay,#confirmStoryOverlay,#storyOve
     }
   });
 })();
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
 </script>
 
 
@@ -1269,6 +1382,16 @@ document.querySelectorAll('#posterCongratsOverlay,#confirmStoryOverlay,#storyOve
   });
   obs.observe(storyOverlay, { attributes:true, attributeFilter:['style','class'] });
 })();
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
 </script>
 
 
@@ -1289,6 +1412,16 @@ document.querySelectorAll('#posterCongratsOverlay,#confirmStoryOverlay,#storyOve
 // FIX 2 — Xóa hiệu ứng sọc đằng sau popup/story
 document.body.style.background = "#6bd5ff";
 document.body.style.overflow = "hidden";
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
 </script>
 
 
@@ -1316,6 +1449,16 @@ document.body.style.overflow = "hidden";
 
     setInterval(hidePosterBehind, 200);
 })();
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
 </script>
 
 
@@ -1372,6 +1515,16 @@ if(document.getElementById("storyAudio")){
         });
     }
 })();
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
 </script>
 
 
@@ -1385,6 +1538,16 @@ if(document.getElementById("storyAudio")){
     if (window.storyHighlightInterval){ clearInterval(window.storyHighlightInterval); }
     window.updateHighlight = function(){};
 })();
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
 </script>
 
 
@@ -1404,6 +1567,16 @@ body {
 window.updateHighlight = function(){};
 document.querySelectorAll("#storyText p").forEach(p=> p.style.background = "transparent");
 if (window.storyHighlightInterval) clearInterval(window.storyHighlightInterval);
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
 </script>
 
 
@@ -1421,6 +1594,16 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
   });
 });
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
 </script>
 
 
@@ -1441,8 +1624,241 @@ document.addEventListener("DOMContentLoaded", ()=>{
         p.style.background = "transparent";
     });
 });
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
+</script>
+
+
+<!-- FIREBASE LEADERBOARD -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } 
+    from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyBp-d-t6eQ0GuXTehgoPD-h99xB1YUg2Lc",
+    authDomain: "an-toan-internet.firebaseapp.com",
+    projectId: "an-toan-internet",
+    storageBucket: "an-toan-internet.firebasestorage.app",
+    messagingSenderId: "32947390990",
+    appId: "1:32947390990:web:71ec5d85e6b0cef78d4a5f",
+    measurementId: "G-X7HLNTRBZG"
+  };
+
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.saveResult = async function(name, cls, school, correct, time){
+    await addDoc(collection(db, "leaderboard"), {
+      name, cls, school, correct, time,
+      created: Date.now()
+    });
+  };
+
+  window.loadLeaderboard = async function(){
+    const q = query(
+      collection(db, "leaderboard"),
+      orderBy("correct", "desc"),
+      orderBy("time", "asc"),
+      limit(50)
+    );
+    const snap = await getDocs(q);
+    let html = "";
+    snap.forEach(doc=>{
+      const d = doc.data();
+      
+let medal = "";
+if (html === "") medal = "🥇";
+else if (!html.includes("🥇")) medal = "🥇";
+else if (!html.includes("🥈")) medal = "🥈";
+else if (!html.includes("🥉")) medal = "🥉";
+
+html += `<tr>
+  <td class='medal'>${medal}</td>
+
+        <td>${d.name}</td>
+        <td>${d.cls}</td>
+        <td>${d.school}</td>
+        <td>${d.correct}</td>
+        <td>${d.time}s</td>
+      </tr>`;
+    });
+    const body = document.getElementById("leaderboardBody");
+    if(body) body.innerHTML = html;
+  };
+
+  window.loadMyRank = async function(){
+    const q = query(
+      collection(db, "leaderboard"),
+      where("name", "==", window.playerInfo.name),
+      where("cls", "==", window.playerInfo.cls),
+      where("school", "==", window.playerInfo.school),
+      orderBy("created", "desc"),
+      limit(1)
+    );
+
+    const snap = await getDocs(q);
+    let htmlRow = "";
+    snap.forEach(doc => {
+      const d = doc.data();
+      htmlRow += `
+        <tr>
+          <td>🏅</td>
+          <td>${d.name}</td>
+          <td>${d.cls}</td>
+          <td>${d.school}</td>
+          <td>${d.correct}</td>
+          <td>${d.time}s</td>
+        </tr>
+      `;
+    });
+
+    document.getElementById("leaderboardBody").innerHTML = htmlRow;
+    document.getElementById("leaderboard").style.display = "block";
+  };
+
+
+function showTop50(){
+ document.getElementById("leaderboard").style.display="block";
+ if(window.loadLeaderboard) loadLeaderboard();
+}
+
+function computeScore(correct, time){
+ return correct*100 - time;
+}
+
+</script>
+<!-- LEADERBOARD TABLE -->
+<div id="leaderboard" style="display:none" style="margin-top:30px;">
+  <h2>Bảng xếp hạng TOP 50</h2>
+  <table border="1" width="100%">
+    <thead>
+      <tr>
+        <th>Hạng</th><th>Tên</th>
+        <th>Lớp</th>
+        <th>Trường</th>
+        <th>Điểm</th>
+        <th>Thời gian</th>
+      </tr>
+    </thead>
+    <tbody id="leaderboardBody"></tbody>
+  </table>
+</div>
+
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { 
+    getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit 
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyBp-d-t6eQ0GuXTehgoPD-h99xB1YUg2Lc",
+    authDomain: "an-toan-internet.firebaseapp.com",
+    projectId: "an-toan-internet",
+    storageBucket: "an-toan-internet.firebasestorage.app",
+    messagingSenderId: "32947390990",
+    appId: "1:32947390990:web:71ec5d85e6b0cef78d4a5f",
+    measurementId: "G-X7HLNTRBZG"
+  };
+
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.saveResult = async function(player){
+    await addDoc(collection(db,"leaderboard"), player);
+  };
+
+  window.loadLeaderboard = async function(){
+    const q = query(collection(db,"leaderboard"),
+      orderBy("correct","desc"),
+      orderBy("time","asc"),
+      limit(50)
+    );
+    const snap = await getDocs(q);
+    let rows="";
+    snap.forEach(d=>{
+      const x=d.data();
+      rows += `<tr><td>${x.name}</td><td>${x.class}</td><td>${x.school}</td><td>${x.correct}</td><td>${x.time}</td></tr>`;
+    });
+    const body=document.getElementById("leaderboardBody");
+    if(body) body.innerHTML=rows;
+  };
+</script>
+
+
+<!-- Leaderboard Section -->
+<div id="leaderboardBox" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+background:white; padding:20px; border-radius:12px; width:90%; max-width:400px; box-shadow:0 0 20px rgba(0,0,0,0.3); z-index:99999;">
+  <h3 style="margin-top:0; text-align:center;">🏆 TOP 50</h3>
+  <table style="width:100%; border-collapse:collapse; font-size:14px;">
+    <thead>
+      <tr>
+        <th>Tên</th><th>Lớp</th><th>Trường</th><th>Đúng</th><th>Thời gian</th>
+      </tr>
+    </thead>
+    <tbody id="leaderboardBody"></tbody>
+  </table>
+  <button onclick="document.getElementById('leaderboardBox').style.display='none'"
+    style="margin-top:15px; width:100%; padding:8px; border:none; border-radius:8px; background:#007bff; color:white;">
+    Đóng
+  </button>
+</div>
+
+<button id="openLeaderboardBtn"
+ onclick="document.getElementById('leaderboardBox').style.display='block'; loadLeaderboard();"
+ style="position:fixed; bottom:20px; right:20px; padding:10px 14px; background:#ff9800; color:#fff; border:none; border-radius:50%; font-size:14px; z-index:9999;">
+ 🏆
+</button>
+
+
+<script>
+let gameStartTime = null;
+let correctAnswers = 0;
+
+function startGame(){
+    gameStartTime = Date.now();
+}
+
+function addCorrect(){
+    correctAnswers++;
+}
+
+async function endGameAndUpload(name, classroom, school){
+    let end = Date.now();
+    let durationSec = Math.floor((end - gameStartTime)/1000);
+    let score = (correctAnswers * 100) - durationSec;
+    if(score < 0) score = 0;
+
+    try{
+        await addDoc(collection(db,"leaderboard"),{
+            name: name,
+            class: classroom,
+            school: school,
+            correct: correctAnswers,
+            time: durationSec,
+            score: score,
+            created: Date.now()
+        });
+        document.getElementById("leaderboardBox").style.display="block";
+        loadLeaderboard();
+    }catch(e){
+        console.error(e);
+    }
+}
 </script>
 
 </body>
 </html>
-
