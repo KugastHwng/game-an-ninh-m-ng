@@ -77,6 +77,11 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 </style>
 </head>
 <body>
+<!-- QR GAME ONLINE -->
+<div id="qrGame" style="position:fixed; top:1px; right:1px; z-index:9999;">
+  <img src="qr_game_link.png" style="width:60px; height:auto; border-radius:8px;">
+</div>
+
 
 <!-- === NHẠC NỀN === -->
 <audio id="bgMusic" loop>
@@ -941,8 +946,8 @@ const superQuiz = [
     correct: 2 // index 2 = C
   },
   {
-    q: "2. Ở góc độ nhận thức sai lệch (cognitive distortion), chị A mắc phải lỗi nào khiến bản thân không còn giữ được tiêu chí kiểm chứng thông tin?",
-    options: ["A. Catastrophizing (phóng đại hậu quả)", "B. Selective attention (chú ý chọn lọc về phía rủi ro)", "C. External validation trap (phụ thuộc hướng dẫn bên ngoài để quyết định)", "D. Confirmation bias (thiên kiến xác nhận)"],
+    q: "2. Ở góc độ nhận thức sai lệch, chị A mắc phải lỗi nào khiến bản thân không còn giữ được tiêu chí kiểm chứng thông tin?",
+    options: ["A. (phóng đại hậu quả)", "B.(chú ý chọn lọc về phía rủi ro)", "C.  (phụ thuộc hướng dẫn bên ngoài để quyết định)", "D. (thiên kiến xác nhận)"],
     correct: 2 // C
   },
   {
@@ -956,7 +961,7 @@ const superQuiz = [
     correct: 1 // B
   },
   {
-    q: "5. Chi tiết nào cho thấy chị A không còn hành động dựa trên thông tin khách quan mà dựa trên “áp lực khung cảnh” (contextual compulsion)?",
+    q: "5. Chi tiết nào cho thấy chị A không còn hành động dựa trên thông tin khách quan mà dựa trên “áp lực khung cảnh”?",
     options: [
       "A. Vào website giả mạo",
       "B. Nhập thông tin cá nhân",
@@ -1440,3 +1445,4 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
 </body>
 </html>
+
