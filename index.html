@@ -7,6 +7,22 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background: linear-gradient(#6bd5ff, #b9f1ff); }
+/* Sửa lỗi nền xanh của quiz */
+#quiz {
+    display: none;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(#6bd5ff, #b9f1ff); 
+}
+/* Thu nhỏ poster để không bị quá to */
+#poster img {
+    max-width: 90%;
+    max-height: 80vh;
+    object-fit: contain;
+}
 
 /* INTRO */
 #introContainer,#outroScreen { width:100vw; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px; box-sizing:border-box; }
@@ -23,7 +39,7 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 
 /* GAME */
 #gameTitle { display:none; text-align:center; margin-top:20px; color:#0077c8; }
-.game-area { display:none; flex-direction:row; justify-content:center; align-items:flex-end; gap:20px; margin-top:20px; position:relative; height:400px; }
+.game-area { display:none; flex-direction:row; justify-content:center; align-items:flex-end; gap: 40px; margin-top: 60px; position:relative; height:400px; }
 .tower { width:120px; height:150px; border-radius:20px 20px 0 0; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; cursor:pointer; position:relative; box-shadow:0 8px 20px rgba(0,0,0,0.25); transition:0.3s; }
 .tower:hover { transform: scale(1.05); }
 .roof { width:120px; height:40px; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); margin-bottom:0; box-shadow:0 4px 10px rgba(0,0,0,0.3); }
@@ -148,7 +164,7 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 <!-- OUTRO -->
 <div id="outroScreen">
   <h1 id="outroTitle" style="opacity:0; transition:opacity 1s;">Thank for playing!</h1>
-  <p id="outroText" style="opacity:0; transition:opacity 1s;">Bạn đã hoàn thành trò chơi.Hãy chia sẻ cho bạn bè cùng chơi nhé.Hẹn gặp lại!</p>
+  <p id="outroText" style="opacity:0; transition:opacity 1s;">Bạn đã hoàn thành trò chơi.Hãy chia sẻ cho bạn bè cùng chơi nhé.Hẹn gặp lại!Game được tạo bởi Hưng và Quân.</p>
   <div id="outroCharacter" style="width:80px; height:80px; background:#ffeb3b; border-radius:50%; margin-top:30px; display:flex; justify-content:center; align-items:center; font-size:36px; opacity:0; transition:opacity 1s;">😊</div>
 </div>
 
@@ -182,7 +198,22 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
     <button id="nextQuizBtn" style="background:#00a8ff;">Tiếp tục</button>
   </div>
 </div>
+<div id="activity3Screen" style="display:none; flex-direction:column; justify-content:center; align-items:center; height:100vh; padding:20px; text-align:center; background:#87CEFA;">
+  <h1>Hoạt động 3</h1>
+  <p style="font-size:20px; color:#0077c8; margin-bottom:15px;">
+    Lan đang làm poster tuyên truyền an toàn mạng nhưng bạn ấy chỉ mới xong phần trình bày, bạn hãy giúp bạn ấy phần nội dung nhé.
+  </p>
+  <button id="startQuizBtn" style="margin-top:20px; padding:10px 16px; background:#00a8ff; color:#fff; border:none; border-radius:8px; cursor:pointer;">OK</button>
+</div>
 
+<div id="quiz" style="display:none; flex-direction:column; align-items:center; gap:12px; margin-top:20px;">
+  <div id="question" style="font-size:20px; font-weight:600;"></div>
+  <div id="options" style="display:flex; flex-direction:column; gap:10px;"></div>
+</div>
+
+<div id="poster" style="display:none; margin-top:20px; font-size:18px;">
+  <img src="posternhé.png" alt="Poster" style="max-width:90%; border-radius:12px;">
+</div>
 <!-- ========================================================================== -->
 
 <script>
@@ -309,7 +340,9 @@ function checkTowerAnswer(isCorrect){
 function checkAllTowersCompleted(){
   const allDone=Object.values(currentLevel).every(l=>l>=1);
   if(allDone){ finalPopup.style.display='block'; }
+  
 }
+
 
 document.getElementById('nextGameBtn').onclick=()=>{ finalPopup.style.display='none'; showAdviceGame(); };
 
@@ -354,6 +387,36 @@ function showAdviceQuestion(){
     adviceAnswersDiv.appendChild(btn);
   });
   advicePopup.style.display='block';
+  
+  }
+  function startActivity3(){
+  // Ẩn các màn hình khác
+  gameArea.style.display='none';
+  quizPopup.style.display='none';
+  congratsPopup.style.display='none';
+  videoPopup.style.display='none';
+  outroScreen.style.display='none';
+  
+  // Hiển thị màn hình Hoạt động 3
+  document.getElementById('activity3Screen').style.display='flex';
+  
+  // Nút tiếp tục để qua outro
+  document.getElementById('activity3NextBtn').onclick = () => {
+    document.getElementById('activity3Screen').style.display='none';
+    // Gọi outro gốc
+    if(typeof originalShowOutro === 'function') originalShowOutro();
+    else document.getElementById('outroScreen').style.display='flex';
+  };
+}
+
+// Sửa finishQuizFlow để gọi startActivity3 trước outro
+function finishQuizFlow(){
+  quizPopup.style.display = 'none';
+  congratsPopup.style.display = 'none';
+  videoPopup.style.display = 'none';
+  
+  // Gọi Hoạt động 3 trước outro
+  startActivity3();
 }
 
 // --- OUTRO ---
@@ -377,6 +440,12 @@ function closeTowerGuide(){
   document.getElementById('towerGuidePopup').style.display='none';
   typeIntro();  // << BẮT ĐẦU INTRO SAU KHI ẤN ĐÓNG
 }
+
+// Hide poster when story shown
+document.getElementById('storyOverlay').addEventListener('transitionstart',()=>{
+  try{ document.getElementById('poster').style.display='none'; }catch(e){}
+});
+
 </script>
 
 <!-- ======= APPENDED SCRIPT: chúc mừng → video → quiz (KHÔNG SỬA GAME) ======= -->
@@ -552,20 +621,105 @@ function renderQuizQuestion(){
 }
 
 // Hoàn tất quiz → gọi outro gốc để hiển thị màn outro cũ
+function startActivity3(){
+  // Ẩn các màn hình khác
+  gameArea.style.display='none';
+  quizPopup.style.display='none';
+  congratsPopup.style.display='none';
+  videoPopup.style.display='none';
+  outroScreen.style.display='none';
+  
+  // Hiển thị màn hình Hoạt động 3
+  document.getElementById('activity3Screen').style.display='flex';
+  
+  // Nút tiếp tục để qua outro
+  document.getElementById('activity3NextBtn').onclick = () => {
+    document.getElementById('activity3Screen').style.display='none';
+    // Gọi outro gốc
+    if(typeof originalShowOutro === 'function') originalShowOutro();
+    else document.getElementById('outroScreen').style.display='flex';
+  };
+}
+
+// Sửa finishQuizFlow để gọi startActivity3 trước outro
 function finishQuizFlow(){
-  // đóng quiz popup
   quizPopup.style.display = 'none';
   congratsPopup.style.display = 'none';
   videoPopup.style.display = 'none';
-  // gọi showOutro gốc (originalShowOutro) nếu có
-  if (typeof originalShowOutro === 'function') {
-    // gọi lại hàm gốc để hiển thị outro mặc định
-    originalShowOutro();
+  
+  // Gọi Hoạt động 3 trước outro
+  startActivity3();
+}
+
+
+const quizData = [
+  { question: "Bạn nên làm gì để bảo vệ mật khẩu tài khoản của mình?", options: ["Dùng ngày sinh", "Tạo mật khẩu mạnh và không chia sẻ", "Viết ra giấy", "Dùng 1 mật khẩu cho tất cả"], answer: 1 },
+  { question: "Khi sử dụng nền tảng trực tuyến, bạn nên làm gì để bảo vệ quyền riêng tư?", options: ["Không đọc chính sách", "Chia sẻ thông tin cá nhân", "Kiểm tra chính sách và điều chỉnh cài đặt", "Chỉ đăng thông tin công ty"], answer: 2 },
+  { question: "Khi nhận được đường link lạ, bạn nên làm gì?", options: ["Nhấn ngay", "Chia sẻ cho bạn bè", "Không nhấp và kiểm tra nguồn gửi", "Sao chép vào MXH hỏi ý kiến"], answer: 2 },
+  { question: "Trước khi đăng bất cứ nội dung nào lên mạng, bạn cần chú ý điều gì?", options: ["Nội dung hài hước", "Nội dung an toàn, phù hợp, không gây hại", "Có nhiều lượt like", "Trùng bài người khác"], answer: 1 }
+];
+
+let current = 0;
+
+function showQuestion() {
+  if(current >= quizData.length){
+    document.getElementById("quiz").style.display = "none";
+    document.getElementById("poster").style.display = "block"; // hiện poster
+    return;
+  }
+
+  const q = quizData[current];
+  document.getElementById("question").innerText = q.question;
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.innerText = opt;
+    btn.style.padding = "10px 16px";
+    btn.style.borderRadius = "8px";
+    btn.style.border = "none";
+    btn.style.cursor = "pointer";
+    btn.style.background = "#00a8ff";
+    btn.style.color = "#fff";
+    btn.style.fontWeight = "600";
+    btn.style.margin = "5px";
+    btn.onclick = () => checkAnswer(i);
+    optionsDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(selected){
+  if(selected === quizData[current].answer){
+
+    // 🔊Âm thanh đúng
+    correctSound.currentTime = 0;
+    correctSound.play();
+
+    current++;
+    showQuestion();
+
   } else {
-    // fallback: hiển thị outroScreen nếu không có hàm gốc
-    document.getElementById('outroScreen').style.display = 'flex';
+
+    // 🔊Âm thanh sai
+    wrongSound.currentTime = 0;
+    wrongSound.play();
+
+    alert("Sai rồi, thử lại nhé!");
   }
 }
+
+// Khi bắt đầu hoạt động 3
+function startActivity3(){
+  document.getElementById('activity3Screen').style.display='flex';
+  current = 0;
+  document.getElementById("quiz").style.display = "flex";
+  document.getElementById("poster").style.display = "none";
+  showQuestion();
+}
+
+// Bắt đầu quiz
+showQuestion();
 
 // Sự kiện cho nút trên popup chúc mừng
 watchVideoBtn.onclick = () => {
@@ -631,8 +785,658 @@ lessonVideo.onended = () => {
 
   } catch(e){}
 })();
+function startActivity3() {
+    // Ẩn TẤT CẢ các màn hình cũ trước khi vào hoạt động 3
+    gameArea.style.display = 'none';
+    gameTitle.style.display = 'none';
+    towerGuide.style.display = 'none';
+    finalPopup.style.display = 'none';
+    popup.style.display = 'none';
+    advicePopup.style.display = 'none';
+    congratsPopup.style.display = 'none';
+    videoPopup.style.display = 'none';
+    quizPopup.style.display = 'none';
+    outroScreen.style.display = 'none';
+
+    // Hiện màn hình Hoạt động 3
+    document.getElementById('activity3Screen').style.display = 'flex';
+
+    // Reset quiz con
+    current = 0;
+    document.getElementById("quiz").style.display = "none";
+    document.getElementById("poster").style.display = "none";
+}
+
+function endActivity3(){
+  // Ẩn Hoạt động 3
+  document.getElementById('activity3Screen').style.display = 'none';
+  // Tiếp tục outro gốc
+  showOutro();
+}
+// Gắn sự kiện cho nút OK
+document.getElementById('startQuizBtn').onclick = () => {
+    // Ẩn màn hình hoạt động 3
+    document.getElementById('activity3Screen').style.display = 'none';
+    // Bắt đầu quiz hoặc outro tiếp theo
+    current = 0;
+    document.getElementById("quiz").style.display = "flex";
+    document.getElementById("poster").style.display = "none";
+    showQuestion(); // gọi hàm hiển thị câu hỏi đầu tiên
+};
+</script>
+
+
+<!-- BEGIN: Poster congrats + story + super-quiz (added by assistant) -->
+<style>
+/* Poster congrats popup */
+#posterCongratsOverlay, #confirmStoryOverlay, #storyOverlay, #superQuizPopup, #superQuizEnd {
+  position: fixed; inset: 0; display: none; z-index: 9999; justify-content:center; align-items:center; background: rgba(0,0,0,0.6);
+}
+#posterCongrats, #confirmStory, #storyBox, #superQuizBox, #superQuizEndBox {
+  background: #fff; border-radius:12px; padding:18px; max-width:900px; width:90%; box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+}
+#posterCongrats .content { display:flex; gap:16px; align-items:center; }
+#posterCongrats .left { flex: 0 0 40%; }
+#posterCongrats .left img{ width:100%; height:auto; border-radius:8px; }
+#posterCongrats .right { flex:1; text-align:left; }
+#posterCongrats h2 { margin-top:0; color:#0077c8; }
+.smallBtn { padding:10px 14px; border-radius:8px; border:none; cursor:pointer; font-weight:600; background:#00a8ff; color:#fff; }
+.ghostBtn { background:#ff6b6b; }
+.storyText { max-height:360px; overflow:auto; text-align:left; line-height:1.5; color:#073b4c; }
+#superQuizBox .q { font-weight:700; margin-bottom:10px; }
+#superQuizBox .options button { display:block; width:100%; margin:8px 0; padding:10px; border-radius:8px; border:none; cursor:pointer; background:#00a8ff; color:#fff; font-weight:600; }
+#superQuizEndBox .animatedText { font-size:20px; line-height:1.6; text-align:center; padding:20px; }
+</style>
+
+<!-- Poster congrats overlay -->
+<div id="posterCongratsOverlay" aria-hidden="true">
+  <div id="posterCongrats" role="dialog">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <h2>Chúc mừng — Bạn đã hoàn thành poster giúp Lan!</h2>
+      <button onclick="closePosterCongrats()" style="background:transparent;border:none;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <div class="content" style="margin-top:10px;">
+      <div class="left"><img src="posternhé.png" alt="Poster"></div>
+      <div class="right">
+        <p>Bạn đã hoàn thành poster giúp Lan. Hãy nhấn tiếp tục để nghe một câu chuyện dựa trên một câu chuyện có thật giúp hiểu thêm về cách kẻ gian lợi dụng chị A.</p>
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <button class="smallBtn" id="pcContinueBtn">Tiếp tục</button>
+          <button class="smallBtn ghostBtn" onclick="closePosterCongrats()">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm to view story -->
+<div id="confirmStoryOverlay" aria-hidden="true">
+  <div id="confirmStory">
+    <h2>Bạn có muốn nghe chuyện của chị A (dựa trên câu chuyện có thật)?</h2>
+    <p style="color:#333;">Nghe câu chuyện sẽ giúp bạn hiểu rõ cách lừa đảo vận hành. Bạn có thể <strong>Bỏ qua</strong> và trả lời câu hỏi ngay.</p>
+    <div style="display:flex; gap:10px; margin-top:12px;">
+      <button class="smallBtn" id="agreeStoryBtn">Đồng ý — Nghe chuyện</button>
+      <button class="smallBtn ghostBtn" id="skipStoryBtn">Bỏ qua — Trả lời câu hỏi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Story overlay -->
+<div id="storyOverlay" aria-hidden="true">
+  <div id="storyBox">
+    <h2>Chuyện của chị A</h2>
+    <div class="storyText" id="storyText">
+      <p>Chị A làm việc trong một cửa hàng nhỏ. Một buổi chiều, chị nhận được cuộc gọi từ một người tự xưng là shipper. Anh ta nói rằng đang giữ một món hàng gửi cho chị, nhưng chị A bảo rằng mình không hề đặt hàng.</p>
+      <p>Bạn đọc tiếp dưới...</p>
+      <p>Ban đầu, chị A rất tỉnh táo và trả lời rõ ràng: “Tôi không đặt gì cả, anh giao nhầm rồi.” Shipper vẫn khăng khăng rằng đây là hàng “đặt trước”, yêu cầu chị phải ra nhận để kiểm tra. Chị A từ chối thêm vài lần nhưng anh ta liên tục gọi lại, giọng ngày càng gấp gáp và khó chịu.</p>
+      <p>Một lúc sau, shipper hỏi một câu khiến chị bắt đầu lo lắng: “Chị có biết trong kiện này có hàng cấm không? Chị không ký nhận là chị chịu trách nhiệm đó.” Chị A bối rối. Trong đầu chị chỉ còn lại một suy nghĩ: “Nếu thật là hàng cấm thì sao? Mình không nhận thì có bị nghi oan không?” Dù trước đó rất tỉnh, chị bắt đầu sợ. Anh shipper lợi dụng cảm giác ấy, liên tục thúc ép: “Nếu chị không muốn bị phạt, tôi sẽ hướng dẫn chị làm thủ tục xác minh nhanh. Chị chỉ cần chuyển khoản phí kiểm tra để hệ thống đóng xác nhận.”</p>
+      <p>Chị A mở tài khoản nhưng trong thẻ không đủ tiền. Lập tức, người kia tiếp tục “chỉ dẫn”: “Không sao, chị vay tạm ngân hàng online đi cho nhanh. Tôi gửi chị link nè, chỉ cần bấm vô là vay được 25 triệu. Lãi suất thấp lắm, xử lý 5 phút.” Không kịp suy nghĩ, chị A nhấn vào đường link vay tiền. Trang web hiện lên rất giống ngân hàng thật, có logo, số hợp đồng, thậm chí chữ ký điện tử. Vì đang hoảng loạn, chị nhập toàn bộ thông tin cá nhân, rồi chuẩn bị bấm xác nhận vay.</p>
+      <p>Đúng lúc đó, cô đồng nghiệp đi ngang thấy chị ngồi quá lâu, mặt tái và tay run run nên bước đến hỏi: “Chị làm gì mà căng thẳng vậy?” Nghe chị A kể lại, cô lập tức hiểu đó là lừa đảo chiếm đoạt tài sản. Cô giật lại điện thoại, tắt trang web giả và yêu cầu chị A không chuyển bất kỳ đồng nào, nhưng chị A đã vay tiền trên một app ngân hàng vay 25 triệu với lãi suất siêu cao. Hên chỉ một click bấm vào màn hình nữa thôi là, chị A đã: Chuyển tiền cho kẻ lừa đảo. Nhờ có người can thiệp kịp thời, chị A may mắn không mất tiền. Nhưng chị phải gánh món lãi khổng lồ.</p>
+      <p>Sau sự việc, chị A nói trong run rẩy: “Lúc đầu tôi tỉnh táo lắm… nhưng họ nói hàng cấm làm tôi sợ quá, mất hết lý trí.”</p>
+    </div>
+    <audio id="storyAudio" controls style="width:100%; margin-top:12px;">
+      <source src="voice1.mp3" type="audio/mpeg">
+      Trình duyệt không hỗ trợ audio.
+    </audio>
+    <div style="display:flex; gap:10px; margin-top:12px;">
+      <button class="smallBtn" id="storyOkBtn">Đã nghe xong — Qua câu hỏi</button>
+      <button class="smallBtn ghostBtn" id="storySkipBtn">Bỏ qua — Qua câu hỏi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Super quiz popup -->
+<div id="superQuizPopup" aria-hidden="true">
+  <div id="superQuizBox">
+    <h2>🧠🔥 5 Câu trắc nghiệm cấp độ SIÊU TỐI THƯỢNG</h2>
+    <div id="superQuizContent">
+      <!-- question/content injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Super quiz end popup with animated text (will play mp3) -->
+<div id="superQuizEnd" aria-hidden="true">
+  <div id="superQuizEndBox">
+    <h2>Kết thúc bài kiểm tra</h2>
+    <div class="animatedText" id="animatedText">Cảm ơn bạn đã hoàn thành! Hãy luôn cảnh giác và chia sẻ kiến thức này với người thân.</div>
+    <audio id="endAudio" style="display:none;">
+      <source src="voice1.mp3" type="audio/mpeg">
+    </audio>
+    <div style="display:flex; justify-content:center; margin-top:12px;">
+      <button class="smallBtn" onclick="closeSuperQuizEnd()">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- Wire up interception of Hoạt động 3 final question ---
+// Keep reference to original checkAnswer if exists
+const originalCheckAnswer = window.checkAnswer || null;
+
+// Super-quiz data (using the 4 questions provided in the user's text)
+const superQuiz = [
+  {
+    q: "1. Trong chuỗi diễn biến, đâu là điểm cho thấy kẻ lừa đảo không chỉ lợi dụng nỗi sợ của chị A, mà còn tạo ra một khuôn khổ nhận thức mới, khiến chị A đánh giá sai bản chất của sự việc?",
+    options: ["A. Sử dụng từ khóa 'hàng cấm' để tạo sợ hãi", "B. Ép thời gian bằng cách gọi liên tục", "C. Chuyển vai từ shipper → người hỗ trợ pháp lý mà không cần chứng minh", "D. Đưa link vay tiền với giao diện ngân hàng thật"],
+    correct: 2 // index 2 = C
+  },
+  {
+    q: "2. Ở góc độ nhận thức sai lệch (cognitive distortion), chị A mắc phải lỗi nào khiến bản thân không còn giữ được tiêu chí kiểm chứng thông tin?",
+    options: ["A. Catastrophizing (phóng đại hậu quả)", "B. Selective attention (chú ý chọn lọc về phía rủi ro)", "C. External validation trap (phụ thuộc hướng dẫn bên ngoài để quyết định)", "D. Confirmation bias (thiên kiến xác nhận)"],
+    correct: 2 // C
+  },
+  {
+    q: "3. Chi tiết nào cho thấy kẻ lừa đảo đã cố tình tạo 'paradox lựa chọn', khiến mọi đường chị A chọn đều dẫn đến kết quả có lợi cho tội phạm?",
+    options: ["A. 'Không nhận hàng thì chị chịu trách nhiệm.'", "B. 'Chỉ cần chuyển phí để xác minh.'", "C. 'Không đủ tiền thì vay ngân hàng online đi cho nhanh.'", "D. 'Trang web giống hệt ngân hàng thật.'"],
+    correct: 0 // A
+  },
+  {
+    q: "4. Phân tích theo mô hình tấn công tâm lý 'tầng áp lực kép', câu nói nào là sự kết hợp hoàn hảo nhất của đe dọa + giải pháp, khiến nạn nhân bị cuốn vào guồng?",
+    options: ["A. 'Trong kiện có hàng cấm, chị ký là chịu trách nhiệm.'", "B. 'Không muốn bị phạt thì tôi hướng dẫn thủ tục xác minh nhanh.'", "C. 'Tài khoản không đủ à? Vậy chị vay ngân hàng online đi cho lẹ.'", "D. 'Trang này xử lý nhanh lắm, 5 phút là xong.'"],
+    correct: 1 // B
+  },
+  {
+    q: "5. Chi tiết nào cho thấy chị A không còn hành động dựa trên thông tin khách quan mà dựa trên “áp lực khung cảnh” (contextual compulsion)?",
+    options: [
+      "A. Vào website giả mạo",
+      "B. Nhập thông tin cá nhân",
+      "C. Không đọc lãi suất nhưng vẫn bấm vay",
+      "D. Chuẩn bị chuyển tiền dù biết mình không đặt hàng"
+    ],
+    correct: 2 // index 2 = C
+  }
+];
+
+let superIndex = 0;
+
+function renderSuperQuestion(){
+  const box = document.getElementById('superQuizContent');
+  box.innerHTML = '';
+  if(superIndex >= superQuiz.length){
+    // finished
+    document.getElementById('superQuizPopup').style.display = 'none';
+    showSuperQuizEnd();
+    return;
+  }
+  const item = superQuiz[superIndex];
+  const qEl = document.createElement('div');
+  qEl.className = 'q';
+  qEl.textContent = item.q;
+  box.appendChild(qEl);
+  const opts = document.createElement('div');
+  opts.className = 'options';
+  item.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = opt;
+    btn.onclick = () => {
+      if(i === item.correct){
+        try { document.getElementById('correctSound').currentTime = 0; document.getElementById('correctSound').play(); } catch(e){}
+        alert('Chính xác!');
+        superIndex++;
+        renderSuperQuestion();
+      } else {
+        try { document.getElementById('wrongSound').currentTime = 0; document.getElementById('wrongSound').play(); } catch(e){}
+        alert('Sai rồi, thử lại nhé.');
+      }
+    };
+    opts.appendChild(btn);
+  });
+  box.appendChild(opts);
+}
+
+function showSuperQuiz(){
+  superIndex = 0;
+  document.getElementById('superQuizPopup').style.display = 'flex';
+  renderSuperQuestion();
+}
+
+function showSuperQuizEnd(){
+  document.getElementById('superQuizEnd').style.display = 'flex';
+  // play end audio and animate text (simple fade in)
+  const endAudio = document.getElementById('endAudio');
+  try { endAudio.currentTime = 0; endAudio.play().catch(()=>{}); } catch(e){}
+  const t = document.getElementById('animatedText');
+  t.style.opacity = 0;
+  setTimeout(()=> t.style.transition = 'opacity 0.8s', 50);
+  setTimeout(()=> t.style.opacity = 1, 150);
+}
+
+function closeSuperQuizEnd(){
+  document.getElementById('superQuizEnd').style.display = 'none';
+  // continue with original outro if available
+  if(typeof originalShowOutro === 'function') originalShowOutro();
+  else document.getElementById('outroScreen').style.display = 'flex';
+}
+
+// Show poster congrats overlay (called when user answers Q4 correctly in activity3)
+function showPosterCongrats(){
+  // hide activity3 quiz
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('poster').style.display = 'block';
+  document.getElementById('posterCongratsOverlay').style.display = 'flex';
+}
+
+// Close poster congrats
+function closePosterCongrats(){
+  document.getElementById('posterCongratsOverlay').style.display = 'none';
+  // show poster and resume normal flow (poster already displayed)
+  document.getElementById('poster').style.display = 'block';
+  // Optionally show confirm directly
+}
+
+// Hook buttons
+document.addEventListener('click', function(e){
+  if(e.target && e.target.id === 'pcContinueBtn'){
+    document.getElementById('posterCongratsOverlay').style.display = 'none';
+    document.getElementById('confirmStoryOverlay').style.display = 'flex';
+  }
+  if(e.target && e.target.id === 'agreeStoryBtn'){
+    document.getElementById('confirmStoryOverlay').style.display = 'none';
+    document.getElementById('storyOverlay').style.display = 'flex';
+    // autoplay audio if possible
+    try { const a = document.getElementById('storyAudio'); a.currentTime = 0; a.play().catch(()=>{}); } catch(e){}
+    // when audio ends, after 3s go to super quiz
+    const a = document.getElementById('storyAudio');
+    if(a){
+      a.onended = function(){
+        setTimeout(()=>{
+          document.getElementById('storyOverlay').style.display = 'none';
+          showSuperQuiz();
+        }, 3000);
+      };
+    }
+  }
+  if(e.target && e.target.id === 'skipStoryBtn'){
+    document.getElementById('confirmStoryOverlay').style.display = 'none';
+    showSuperQuiz();
+  }
+  if(e.target && e.target.id === 'storyOkBtn'){
+    // user clicked "Đã nghe xong" button -> wait 3s then show super quiz
+    try { document.getElementById('storyAudio').pause(); } catch(e){}
+    document.getElementById('storyOverlay').style.display = 'none';
+    setTimeout(()=> showSuperQuiz(), 3000);
+  }
+  if(e.target && e.target.id === 'storySkipBtn'){
+    document.getElementById('storyOverlay').style.display = 'none';
+    showSuperQuiz();
+  }
+});
+
+// Override activity3 checkAnswer to intercept Q4 (index 3) correct answer
+if(typeof window.checkAnswer === 'function'){
+  const orig = window.checkAnswer.bind(window);
+  window.checkAnswer = function(selected){
+    try {
+      // current and quizData are globals in original script
+      if(typeof current !== 'undefined' && typeof quizData !== 'undefined'){
+        // If this is the 4th question (index 3) and answer is correct -> show poster congrats flow
+        if(current === 3 && selected === quizData[current].answer){
+          // play correct sound
+          try { document.getElementById('correctSound').currentTime = 0; document.getElementById('correctSound').play(); } catch(e){}
+          // Show poster congrats overlay instead of normal flow
+          showPosterCongrats();
+          // increment current to mark question answered (so resume state consistent)
+          current++;
+          return;
+        }
+      }
+    } catch(e){ console.error(e); }
+    // fallback to original behavior
+    return orig(selected);
+  };
+} else {
+  // if checkAnswer not found, create a safe stub (unlikely)
+  window.checkAnswer = function(selected){
+    console.warn('checkAnswer not found - interaction fallback');
+  };
+}
+</script>
+<!-- END: Poster congrats + story + super-quiz -->
+
+
+<script>
+// === Story Highlight Sync ===
+const storyTimings = [
+  {start:0, end:13.5},
+  {start:13.5, end:32.8},
+  {start:32.8, end:70},
+  {start:70, end:105},
+  {start:105, end:142},
+  {start:142, end:151}
+];
+
+const storyAudio = document.getElementById('storyAudio');
+const storyParas = Array.from(document.querySelectorAll('#storyText p'));
+
+function updateHighlight(){
+  const t = storyAudio.currentTime;
+  storyParas.forEach((p,i)=>{
+    const seg = storyTimings[i];
+    if(seg && t>=seg.start && t<seg.end){
+      p.style.background = 'rgba(255,255,0,0.3)';
+      p.style.transition = '0.3s';
+    } else {
+      p.style.background = 'transparent';
+    }
+  });
+}
+
+storyAudio.addEventListener('timeupdate', updateHighlight);
+
+// Popup animations
+document.querySelectorAll('#posterCongrats,#confirmStory,#storyBox,#superQuizBox').forEach(el=>{
+  el.style.transform='scale(0.85)';
+  el.style.opacity='0';
+  el.style.transition='all 0.35s ease';
+  const obs=new MutationObserver(()=>{
+    if(getComputedStyle(el.parentElement).display!=='none'){
+      requestAnimationFrame(()=>{
+        el.style.transform='scale(1)';
+        el.style.opacity='1';
+      });
+    }
+  });
+  obs.observe(el.parentElement,{attributes:true,attributeFilter:['style']});
+});
+
+// Darker overlays
+document.querySelectorAll('#posterCongratsOverlay,#confirmStoryOverlay,#storyOverlay,#superQuizPopup,#superQuizEnd')
+  .forEach(el=>el.style.background='rgba(0,0,0,0.75)');
+</script>
+
+
+<script>
+// -- Ensure story audio uses relative path so it loads when opening file locally --
+(function(){
+  const audioEl = document.querySelector('#storyAudio source');
+  if(audioEl && audioEl.getAttribute('src').startsWith('/mnt/data/')) {
+    audioEl.setAttribute('src', 'voice1.mp3');
+    // reload parent audio element if present
+    const parent = document.getElementById('storyAudio');
+    if(parent){ parent.load(); }
+  }
+})();
+
+// -- Hide poster when overlays show, restore when all overlays hidden --
+(function(){
+  const posterEl = document.getElementById('poster');
+  const overlays = [
+    document.getElementById('posterCongratsOverlay'),
+    document.getElementById('confirmStoryOverlay'),
+    document.getElementById('storyOverlay'),
+    document.getElementById('superQuizPopup'),
+    document.getElementById('superQuizEnd')
+  ].filter(Boolean);
+
+  function anyOverlayVisible(){
+    return overlays.some(o => o && getComputedStyle(o).display !== 'none');
+  }
+
+  // Observe changes to style/display of each overlay and hide/show poster accordingly
+  overlays.forEach(o=>{
+    if(!o) return;
+    const obs = new MutationObserver(()=>{
+      try{
+        if(anyOverlayVisible()){
+          if(posterEl) posterEl.style.display = 'none';
+        } else {
+          if(posterEl) posterEl.style.display = 'block';
+        }
+      }catch(e){}
+    });
+    obs.observe(o, { attributes: true, attributeFilter: ['style', 'class'] });
+  });
+
+  // Also intercept functions that show overlays via code paths (safer)
+  const origShowPosterCongrats = window.showPosterCongrats;
+  window.showPosterCongrats = function(){
+    if(posterEl) posterEl.style.display='none';
+    if(typeof origShowPosterCongrats === 'function') origShowPosterCongrats();
+  };
+
+  // When story overlay is shown through direct style changes, ensure audio plays
+  const storyOverlay = document.getElementById('storyOverlay');
+  const storyAudio = document.getElementById('storyAudio');
+  if(storyOverlay){
+    const obs2 = new MutationObserver(()=>{
+      if(getComputedStyle(storyOverlay).display !== 'none'){
+        try{
+          if(posterEl) posterEl.style.display='none';
+          // attempt to play audio
+          if(storyAudio){
+            storyAudio.currentTime = 0;
+            const p = storyAudio.play();
+            if(p && typeof p.catch === 'function'){ p.catch(()=>{}); }
+          }
+        }catch(e){}
+      }
+    });
+    obs2.observe(storyOverlay, { attributes: true, attributeFilter: ['style', 'class'] });
+  }
+
+  // Buttons that close story overlay should restore poster when closed (safety)
+  ['storyOkBtn','storySkipBtn','pcContinueBtn'].forEach(id=>{
+    const btn = document.getElementById(id);
+    if(btn){
+      btn.addEventListener('click', ()=>{
+        setTimeout(()=>{ if(posterEl) posterEl.style.display='block'; }, 250);
+      });
+    }
+  });
+})();
+</script>
+
+
+<script>
+// --- Auto pause/resume background music when story popup opens/closes ---
+(function(){
+  const storyOverlay = document.getElementById('storyOverlay');
+  const bg = document.getElementById('bgMusic');
+  if(!storyOverlay || !bg) return;
+
+  const obs = new MutationObserver(()=>{
+    const visible = getComputedStyle(storyOverlay).display !== 'none';
+    if(visible){
+      try{ bg.pause(); }catch(e){}
+    } else {
+      try{ bg.play(); }catch(e){}
+    }
+  });
+  obs.observe(storyOverlay, { attributes:true, attributeFilter:['style','class'] });
+})();
+</script>
+
+
+<script>
+// FIX 1 — Tắt hoàn toàn poster nền khi đang ở Hoạt động 3
+(function(){
+    const poster = document.getElementById("poster");
+
+    const hidePosterWhenQuizRunning = () => {
+        if (typeof current !== "undefined" && current < 4) {
+            poster.style.display = "none";
+        }
+    };
+
+    setInterval(hidePosterWhenQuizRunning, 300);
+})();
+
+// FIX 2 — Xóa hiệu ứng sọc đằng sau popup/story
+document.body.style.background = "#6bd5ff";
+document.body.style.overflow = "hidden";
+</script>
+
+
+<script>
+// FIX chuẩn: Khi popup story/confirm/superquiz mở → ẩn poster ở sau
+(function(){
+    const overlays = [
+        "confirmStoryOverlay",
+        "storyOverlay",
+        "superQuizPopup",
+        "superQuizEnd"
+    ];
+
+    function hidePosterBehind() {
+        const posterImgs = document.querySelectorAll('#posterCongrats img, #poster img');
+        const someOverlayOpen = overlays.some(id => {
+            const el = document.getElementById(id);
+            return el && getComputedStyle(el).display !== "none";
+        });
+
+        posterImgs.forEach(img => {
+            img.style.visibility = someOverlayOpen ? "hidden" : "visible";
+        });
+    }
+
+    setInterval(hidePosterBehind, 200);
+})();
+</script>
+
+
+<script>
+// === FIX 1: TẮT HOÀN TOÀN TỰ PHÁT NHẠC Ở ĐOẠN CUỐI ===
+document.addEventListener("DOMContentLoaded", ()=>{
+    const endAudio = document.getElementById("endAudio");
+    if(endAudio){
+        endAudio.autoplay = false;
+        endAudio.pause();
+        endAudio.play = ()=>{}; 
+    }
+});
+if(document.getElementById("storyAudio")){
+    document.getElementById("storyAudio").onended = null;
+}
+
+// === FIX 2: Làm highlight chữ vàng chạy mượt ===
+(function(){
+    const storyAudio = document.getElementById("storyAudio");
+    const paras = Array.from(document.querySelectorAll("#storyText p"));
+    const timings = window.storyTimings || [];
+
+    function updateFast(){
+        const t = storyAudio.currentTime;
+        paras.forEach((p,i)=>{
+            const seg = timings[i];
+            if(seg && t >= seg.start && t < seg.end){
+                p.style.background = "rgba(255,255,0,0.3)";
+            } else {
+                p.style.background = "transparent";
+            }
+        });
+    }
+
+    if(storyAudio){
+        setInterval(updateFast, 80); 
+    }
+})();
+
+// === FIX 3: Thêm CHÂN cho các TÒA THÁP, không sửa game ===
+(function(){
+    const area = document.getElementById("gameArea");
+    if(area){
+        const towers = document.querySelectorAll(".tower");
+        towers.forEach(t=>{
+            const base = document.createElement("div");
+            base.style.width = "100%";
+            base.style.height = "20px";
+            base.style.background = "rgba(0,0,0,0.25)";
+            base.style.borderRadius = "0 0 12px 12px";
+            base.style.marginTop = "8px";
+            t.appendChild(base);
+        });
+    }
+})();
+</script>
+
+
+<script>
+// Disable yellow highlight in story
+(function(){
+    const storyAudio = document.getElementById("storyAudio");
+    const paras = document.querySelectorAll("#storyText p");
+    paras.forEach(p => p.style.background = "transparent");
+    if (storyAudio){ storyAudio.ontimeupdate = null; }
+    if (window.storyHighlightInterval){ clearInterval(window.storyHighlightInterval); }
+    window.updateHighlight = function(){};
+})();
+</script>
+
+
+<style>
+body {
+    background-attachment: fixed !important;
+    background-position: center bottom !important;
+}
+</style>
+
+
+
+
+
+<script>
+// Fully disable highlight
+window.updateHighlight = function(){};
+document.querySelectorAll("#storyText p").forEach(p=> p.style.background = "transparent");
+if (window.storyHighlightInterval) clearInterval(window.storyHighlightInterval);
+</script>
+
+
+<script>
+// Stop story audio when skipping
+document.addEventListener("DOMContentLoaded", ()=>{
+  const a=document.getElementById("storyAudio");
+  const ids=["skipStoryBtn","storySkipBtn"];
+  ids.forEach(id=>{
+    const b=document.getElementById(id);
+    if(b){
+      b.addEventListener("click", ()=>{
+        if(a){ a.pause(); a.currentTime=0; }
+      });
+    }
+  });
+});
+</script>
+
+
+<style>
+#storyText p {
+    background: transparent !important;
+}
+</style>
+
+<script>
+// Hard-disable highlight
+window.updateHighlight = function(){};
+if (window.storyHighlightInterval) clearInterval(window.storyHighlightInterval);
+
+// Remove any background color that may be applied later
+document.addEventListener("DOMContentLoaded", ()=>{
+    document.querySelectorAll("#storyText p").forEach(p=>{
+        p.style.background = "transparent";
+    });
+});
 </script>
 
 </body>
 </html>
-
