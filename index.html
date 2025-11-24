@@ -74,6 +74,8 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
   50% { background: linear-gradient(#b9f1ff, #6bd5ff); }
   100% { background: linear-gradient(#6bd5ff, #b9f1ff); }
 }
+
+#finalPopup { z-index: 99999 !important; }
 </style>
 
 <style>
@@ -116,6 +118,59 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
  z-index:9999;
 }
 </style>
+
+
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js">
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js">
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
+</script>
+
+<script>
+window.correctCount=0; window.wrongCount=0; window.startTime=Date.now();
+  const firebaseConfig = {
+    apiKey: "AIzaSyBp-d-t6eQ0GuXTehgoPD-h99xB1YUg2Lc",
+    authDomain: "an-toan-internet.firebaseapp.com",
+    projectId: "an-toan-internet",
+    storageBucket: "an-toan-internet.firebasestorage.app",
+    messagingSenderId: "32947390990",
+    appId: "1:32947390990:web:71ec5d85e6b0cef78d4a5f",
+    measurementId: "G-X7HLNTRBZG"
+  };
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
+</script>
 
 </head>
 <body>
@@ -386,7 +441,8 @@ function checkTowerAnswer(isCorrect){
     correctSound.currentTime=0; correctSound.play();
     alert("Chọn đúng! Tháp được nâng cấp 🎉");
     const towerEl=document.getElementById(currentTower);
-    currentLevel[currentTower]=3;
+    currentLevel[currentTower] = 1;
+        currentLevel[currentTower]=3;
     towerEl.classList.add("level3");
   } else { wrongSound.currentTime=0; wrongSound.play(); alert("Mật khẩu yếu, thử lại 😢"); }
   popup.style.display='none';
@@ -477,6 +533,9 @@ function finishQuizFlow(){
 
 // --- OUTRO ---
 function showOutro(){
+    window.endTime = Date.now();
+    window.totalTime = Math.floor((window.endTime - window.startTime)/1000);
+    if(window.correctAnswers!==undefined){ window.playerScore = window.correctAnswers - window.totalTime; }
  document.getElementById("top50Btn").style.display="block";
  const score=computeScore(window.correctAnswers||0, window.totalTime||0); window.playerScore=score;
   // rename button
@@ -522,6 +581,17 @@ function showTop50(){
 
 function computeScore(correct, time){
  return correct*100 - time;
+}
+
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
 }
 
 </script>
@@ -893,6 +963,7 @@ function endActivity3(){
 }
 // Gắn sự kiện cho nút OK
 document.getElementById('startQuizBtn').onclick = () => {
+    window.startTime = Date.now();
     // Ẩn màn hình hoạt động 3
     document.getElementById('activity3Screen').style.display = 'none';
     // Bắt đầu quiz hoặc outro tiếp theo
@@ -909,6 +980,17 @@ function showTop50(){
 
 function computeScore(correct, time){
  return correct*100 - time;
+}
+
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
 }
 
 </script>
@@ -1022,6 +1104,8 @@ function computeScore(correct, time){
 const originalCheckAnswer = window.checkAnswer || null;
 
 // Super-quiz data (using the 4 questions provided in the user's text)
+let correctAnswers = 0;
+let quizStartTime = Date.now();
 const superQuiz = [
   {
     q: "1. Trong chuỗi diễn biến, đâu là điểm cho thấy kẻ lừa đảo không chỉ lợi dụng nỗi sợ của chị A, mà còn tạo ra một khuôn khổ nhận thức mới, khiến chị A đánh giá sai bản chất của sự việc?",
@@ -1078,6 +1162,8 @@ function renderSuperQuestion(){
     btn.textContent = opt;
     btn.onclick = () => {
       if(i === item.correct){
+        correctAnswers++;
+
         try { document.getElementById('correctSound').currentTime = 0; document.getElementById('correctSound').play(); } catch(e){}
         alert('Chính xác!');
         superIndex++;
@@ -1099,6 +1185,11 @@ function showSuperQuiz(){
 }
 
 function showSuperQuizEnd(){
+    const totalTime = Math.floor((Date.now() - quizStartTime)/1000);
+    const score = (correctAnswers * 100) - totalTime;
+    alert(`Bạn đúng ${correctAnswers} câu trong ${totalTime} giây.
+Điểm: ${score}`);
+
   document.getElementById('superQuizEnd').style.display = 'flex';
   // play end audio and animate text (simple fade in)
   const endAudio = document.getElementById('endAudio');
@@ -1208,6 +1299,17 @@ function computeScore(correct, time){
  return correct*100 - time;
 }
 
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
 </script>
 <!-- END: Poster congrats + story + super-quiz -->
 
@@ -1268,6 +1370,17 @@ function showTop50(){
 
 function computeScore(correct, time){
  return correct*100 - time;
+}
+
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
 }
 
 </script>
@@ -1362,6 +1475,17 @@ function computeScore(correct, time){
  return correct*100 - time;
 }
 
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
 </script>
 
 
@@ -1392,6 +1516,17 @@ function computeScore(correct, time){
  return correct*100 - time;
 }
 
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
 </script>
 
 
@@ -1420,6 +1555,17 @@ function showTop50(){
 
 function computeScore(correct, time){
  return correct*100 - time;
+}
+
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
 }
 
 </script>
@@ -1457,6 +1603,17 @@ function showTop50(){
 
 function computeScore(correct, time){
  return correct*100 - time;
+}
+
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
 }
 
 </script>
@@ -1525,6 +1682,17 @@ function computeScore(correct, time){
  return correct*100 - time;
 }
 
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
 </script>
 
 
@@ -1546,6 +1714,17 @@ function showTop50(){
 
 function computeScore(correct, time){
  return correct*100 - time;
+}
+
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
 }
 
 </script>
@@ -1577,6 +1756,17 @@ function computeScore(correct, time){
  return correct*100 - time;
 }
 
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
 </script>
 
 
@@ -1602,6 +1792,17 @@ function showTop50(){
 
 function computeScore(correct, time){
  return correct*100 - time;
+}
+
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
 }
 
 </script>
@@ -1634,6 +1835,17 @@ function computeScore(correct, time){
  return correct*100 - time;
 }
 
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
 </script>
 
 
@@ -1643,17 +1855,15 @@ function computeScore(correct, time){
   import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } 
     from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-  
   const firebaseConfig = {
-    apiKey: "AIzaSyBp-d-t6eQ0GuXTehgoPD-h99xB1YUg2Lc",
+    apiKey: "AIzaSyBp-d-t6eQGvXTehgoPD-h9x8B1yUg2Lc",
     authDomain: "an-toan-internet.firebaseapp.com",
     projectId: "an-toan-internet",
-    storageBucket: "an-toan-internet.firebasestorage.app",
-    messagingSenderId: "32947390990",
-    appId: "1:32947390990:web:71ec5d85e6b0cef78d4a5f",
+    storageBucket: "an-toan-internet.appspot.com",
+    messagingSenderId: "32947390909",
+    appId: "1:32947390909:web:71ec5d85e0b0cef78d4a5f",
     measurementId: "G-X7HLNTRBZG"
-  };
-
+};
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -1737,6 +1947,17 @@ function computeScore(correct, time){
  return correct*100 - time;
 }
 
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
 </script>
 <!-- LEADERBOARD TABLE -->
 <div id="leaderboard" style="display:none" style="margin-top:30px;">
@@ -1762,17 +1983,15 @@ function computeScore(correct, time){
     getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit 
   } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-  
   const firebaseConfig = {
-    apiKey: "AIzaSyBp-d-t6eQ0GuXTehgoPD-h99xB1YUg2Lc",
+    apiKey: "AIzaSyBp-d-t6eQGvXTehgoPD-h9x8B1yUg2Lc",
     authDomain: "an-toan-internet.firebaseapp.com",
     projectId: "an-toan-internet",
-    storageBucket: "an-toan-internet.firebasestorage.app",
-    messagingSenderId: "32947390990",
-    appId: "1:32947390990:web:71ec5d85e6b0cef78d4a5f",
+    storageBucket: "an-toan-internet.appspot.com",
+    messagingSenderId: "32947390909",
+    appId: "1:32947390909:web:71ec5d85e0b0cef78d4a5f",
     measurementId: "G-X7HLNTRBZG"
-  };
-
+};
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -1796,6 +2015,17 @@ function computeScore(correct, time){
     const body=document.getElementById("leaderboardBody");
     if(body) body.innerHTML=rows;
   };
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
 </script>
 
 
@@ -1825,39 +2055,125 @@ background:white; padding:20px; border-radius:12px; width:90%; max-width:400px; 
 
 
 <script>
-let gameStartTime = null;
-let correctAnswers = 0;
-
-function startGame(){
-    gameStartTime = Date.now();
-}
-
-function addCorrect(){
-    correctAnswers++;
-}
-
-async function endGameAndUpload(name, classroom, school){
-    let end = Date.now();
-    let durationSec = Math.floor((end - gameStartTime)/1000);
-    let score = (correctAnswers * 100) - durationSec;
-    if(score < 0) score = 0;
-
-    try{
-        await addDoc(collection(db,"leaderboard"),{
-            name: name,
-            class: classroom,
-            school: school,
-            correct: correctAnswers,
-            time: durationSec,
-            score: score,
-            created: Date.now()
-        });
-        document.getElementById("leaderboardBox").style.display="block";
-        loadLeaderboard();
-    }catch(e){
-        console.error(e);
+(function(){
+  const target = document.getElementById('outroScreen');
+  if(!target) return;
+  const obs = new MutationObserver(()=>{
+    const st = window.getComputedStyle(target).display;
+    if(st !== 'none'){
+      try{
+        window.endTime = Date.now();
+        window.totalTime = Math.floor((window.endTime - window.startTime)/1000);
+        if(window.correctAnswers!==undefined){
+          window.playerScore = window.correctAnswers - window.totalTime;
+        }
+        if(window.submitScoreIfBetter) window.submitScoreIfBetter();
+      }catch(e){ console.error(e); }
     }
+  });
+  obs.observe(target, { attributes:true, attributeFilter:['style'] });
+})();
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
 }
+
+</script>
+
+
+<div id="scorePopup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); 
+    z-index:99999; justify-content:center; align-items:center;">
+  <div style="background:white; padding:25px; border-radius:14px; width:320px; text-align:center;
+    box-shadow:0 8px 25px rgba(0,0,0,0.35); font-family:Arial;">
+      <h2>🎉 Điểm của bạn</h2>
+      <p id="scorePopupText" style="font-size:18px; margin-top:10px;"></p>
+      <button onclick="document.getElementById('scorePopup').style.display='none';"
+        style="margin-top:15px; padding:10px 20px; border:none; background:#00a8ff; color:white;
+        border-radius:8px; cursor:pointer;">Đóng</button>
+  </div>
+</div>
+
+
+<script>
+(function(){
+  
+function showScorePopup(){
+    const result = computeScore();
+    const score = result.score;
+    const time = result.timePenalty;
+    const correct = window.correctCount || 0;
+    const wrong = window.wrongCount || 0;
+
+    const html = `
+        <strong>Điểm tổng: ${score}</strong><br>
+        ⏱ Thời gian: ${time} giây<br>
+        ✔ Đúng: ${correct} / 22<br>
+        ❌ Sai: ${wrong} câu
+    `;
+    document.getElementById('scorePopupText').innerHTML = html;
+    document.getElementById('scorePopup').style.display = 'flex';
+}
+ câu trong ${time} giây.<br><b>Điểm: ${score}</b>`;
+      document.getElementById('scorePopupText').innerHTML = txt;
+      document.getElementById('scorePopup').style.display='flex';
+    }catch(e){ console.error(e); }
+  }
+
+  const target = document.getElementById('outroScreen');
+  if(!target) return;
+
+  const obs2 = new MutationObserver(()=>{
+    const st = window.getComputedStyle(target).display;
+    if(st !== 'none'){
+      setTimeout(showScorePopup, 800);
+    }
+  });
+  obs2.observe(target, { attributes:true, attributeFilter:['style'] });
+})();
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
+</script>
+
+
+<script>
+// global correctAnswers
+window.correctAnswers = 0;
+
+// delegate for any button or div with correct:true in dataset or JS object
+document.addEventListener('click', function(e){
+    const el = e.target.closest('[data-correct]');
+    if(el){
+        if(el.dataset.correct === "true"){
+            window.correctAnswers++;
+        }
+    }
+});
+
+function computeScore(){
+    const totalQuestions = 22;
+    const base = totalQuestions * 100;
+    const timePenalty = Math.floor((Date.now() - window.startTime)/1000);
+    const wrongPenalty = window.wrongCount * 100;
+    let score = base - timePenalty - wrongPenalty;
+    if(score<0) score=0;
+    return {score, timePenalty};
+}
+
 </script>
 
 </body>
