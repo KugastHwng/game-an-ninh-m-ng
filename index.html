@@ -74,8 +74,6 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
   50% { background: linear-gradient(#b9f1ff, #6bd5ff); }
   100% { background: linear-gradient(#6bd5ff, #b9f1ff); }
 }
-
-#finalPopup { z-index: 99999 !important; }
 </style>
 
 <style>
@@ -441,8 +439,7 @@ function checkTowerAnswer(isCorrect){
     correctSound.currentTime=0; correctSound.play();
     alert("Chọn đúng! Tháp được nâng cấp 🎉");
     const towerEl=document.getElementById(currentTower);
-    currentLevel[currentTower] = 1;
-        currentLevel[currentTower]=3;
+    currentLevel[currentTower]=3;
     towerEl.classList.add("level3");
   } else { wrongSound.currentTime=0; wrongSound.play(); alert("Mật khẩu yếu, thử lại 😢"); }
   popup.style.display='none';
