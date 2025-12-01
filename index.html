@@ -256,7 +256,7 @@ function computeScore(){
 <!-- POPUP CUỐI THÁP -->
 <div class="popup" id="finalPopup">
   <h2>Chúc mừng!</h2>
-  <p>Bạn đã giúp Minh đặt mật khẩu mạnh, nhưng để sau này Minh không đặt mật khẩu yếu nữa, bạn nên cho Minh 1 số lời khuyên.</p>
+  <p>Bạn đã giúp Minh đặt mật khẩu mạnh, nhưng để sau này An không đặt mật khẩu yếu nữa, bạn nên cho Minh 1 số lời khuyên.</p>
   <button id="nextGameBtn">Được thôi</button>
 </div>
 
@@ -278,7 +278,7 @@ function computeScore(){
 <!-- Congratulation popup (shown when showOutro is called) -->
 <div class="popup" id="congratsPopup" style="display:none; width:420px;">
   <h2>Chúc mừng — Bạn đã hoàn thành trò chơi!</h2>
-  <p class="line">Bạn đã giúp Minh cải thiện bảo mật. Xem video ngắn để hiểu thêm tình huống lừa đảo.</p>
+  <p class="line">Bạn đã giúp An cải thiện bảo mật. Xem video ngắn để hiểu thêm tình huống lừa đảo.</p>
   <button id="watchVideoBtn">Xem video hướng dẫn</button>
   <button id="skipToQuizBtn" style="background:#ff6b6b; margin-top:8px;">Bỏ qua video — Trả lời câu hỏi</button>
 </div>
@@ -373,7 +373,7 @@ const towersData = {
   tower1: [{question: "Chọn mật khẩu mạnh.", answers: [{ text: "12345", correct: false },{ text: "Huy3#2025", correct: true },{ text: "abcdef", correct: false }]}],
   tower2: [{question: "Chọn mật khẩu có số và chữ viết hoa.", answers: [{ text: "Pass1234", correct: true },{ text: "abcdefg", correct: false },{ text: "Password", correct: false }]}],
   tower3: [{question: "Chọn mật khẩu có chữ hoa, chữ thường,số và ký tự đặc biệt.", answers: [{ text: "ABCDEFG", correct: false },{ text: "1234567", correct: false },{ text: "Hoctap@1235", correct: true }]}],
-  tower4: [{question: "Chọn mật khẩu đủ 8 ký tự trở lên.", answers: [{ text: "12a424a", correct: false },{ text: "SafePassw1", correct: true },{ text: "chamchi@!", correct: false }]}]
+  tower4: [{question: "Chọn mật khẩu đủ 8 ký tự trở lên.", answers: [{ text: "12a424a", correct: false },{ text: "SafePassw1", correct: false },{ text: "chamchi@!", correct: true }]}]
 };
 
 const towers=document.querySelectorAll('.tower');
@@ -653,7 +653,7 @@ const finalQuiz = [
       'C. Hối thúc nhân vật thực hiện nhanh để “không bỏ lỡ cơ hội”.'
     ],
     // Trong tình huống mô tả, cả A, B, C đều là thủ đoạn được sử dụng → nên tất cả đều đúng
-    correctIndexes: [0,1,2]
+    correctIndexes: 1
   },
   {
     id: 3,
@@ -665,7 +665,7 @@ const finalQuiz = [
       'Bị đe dọa, làm phiền hoặc tiếp tục bị nhắn tin lừa đảo.'
     ],
     // Tất cả đều là hậu quả khả dĩ → coi cả 3 là đúng
-    correctIndexes: [0,1,2]
+    correctIndexes: 0
   },
   {
     id: 4,
@@ -677,7 +677,7 @@ const finalQuiz = [
       'Cảnh giác với đường link, quà tặng, ưu đãi được gửi đột ngột.'
     ],
     // Đáp án đúng: 1 và 3 (khuyến cáo cảnh giác; câu 2 sai)
-    correctIndexes: [0,2]
+    correctIndexes: 0
   }
 ];
 
@@ -2175,3 +2175,4 @@ function computeScore(){
 
 </body>
 </html>
+
