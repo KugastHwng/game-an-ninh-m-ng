@@ -7,7 +7,7 @@
 <title>Hành trình an toàn mạng</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background: linear-gradient(#6bd5ff, #b9f1ff); }
+body { margin:0; font-family:'Poppins', sans-serif; overflow:auto; background: linear-gradient(#6bd5ff, #b9f1ff); }
 /* Sửa lỗi nền xanh của quiz */
 #quiz {
     display: none;
@@ -91,6 +91,37 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 }
 .hide-big-qr #bigQR { display:none!important; }
 
+
+@media (max-width: 600px) {
+  #bigQR img {
+    width: 140px !important;
+  }
+  #bigQR {
+    bottom: 10px !important;
+    right: 10px !important;
+  }
+}
+
+
+/* MOBILE FIX – resize towers on small screens */
+@media (max-width: 480px) {
+  .tower {
+    width: 100px !important;
+    height: 150px !important;
+    border-radius: 20px !important;
+  }
+  .tower-container, .towers-row {
+    gap: 20px !important;
+    padding: 15px 0 !important;
+  }
+}
+@media (max-width: 390px) {
+  .tower {
+    width: 75px !important;
+    height: 155px !important;
+  }
+}
+
 </style>
 <style>
 #leaderboard table {
@@ -99,7 +130,7 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
   margin: 20px auto;
   background: white;
   border-radius: 12px;
-  overflow: hidden;
+  overflow:auto;
 }
 #leaderboard th {
   background: #4aa3ff;
@@ -148,7 +179,7 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 </script>
 
 <style>
-html,body { margin:0; padding:0; overflow:hidden; height:100%; }
+html,body { margin:0; padding:0; overflow:auto; height:100%; }
 .game-area { transform: scale(0.9); transform-origin: top center; }
 @media(max-width:600px){
   .game-area { transform: scale(0.75); }
@@ -163,7 +194,7 @@ html,body { margin:0; padding:0; overflow:hidden; height:100%; }
 <button id="top50Btn" onclick="showTop50()">TOP 50</button>
 <!-- QR GAME -->
 <div id="smallQR" style="display:none; position:fixed; top:1px; right:1px; z-index:9999;">
-<img src="qr_game_link.png" style="width:60px; height:auto; border-radius:8px; padding:2px"/>
+<img src="qr_game_link.png" style="width:60px; height:auto; border-radius:8px;"/>
 </div>
 <!-- === NHẠC NỀN === -->
 <audio id="bgMusic" loop="">
