@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Hành trình an toàn mạng</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
@@ -74,8 +75,23 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
   50% { background: linear-gradient(#b9f1ff, #6bd5ff); }
   100% { background: linear-gradient(#6bd5ff, #b9f1ff); }
 }
-</style>
 
+/* QR TO BÊN PHẢI */
+#bigQR {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+#bigQR img {
+    width: 220px;
+    height:auto;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(0,0,0,0.25);
+}
+.hide-big-qr #bigQR { display:none!important; }
+
+</style>
 <style>
 #leaderboard table {
   border-collapse: collapse;
@@ -99,13 +115,11 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
 #leaderboard tr:nth-child(even) { background: #f2f7ff; }
 .medal { font-size:22px; }
 </style>
-
-
 <style>
 #top50Btn {
  position: fixed;
  top: 10px;
- right: 10px;
+ right: 10px; Đóng
  padding: 6px 10px;
  background:#007bff;
  color:white;
@@ -116,12 +130,9 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
  z-index:9999;
 }
 </style>
-
-
 <!-- Firebase CDN -->
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js"></script>
-
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyBp-d-t6eQ0GuXTehgoPD-h99xB1YUg2Lc",
@@ -136,160 +147,145 @@ body { margin:0; font-family:'Poppins', sans-serif; overflow:hidden; background:
   const db = firebase.firestore();
 </script>
 
+<style>
+html,body { margin:0; padding:0; overflow:hidden; height:100%; }
+.game-area { transform: scale(0.9); transform-origin: top center; }
+@media(max-width:600px){
+  .game-area { transform: scale(0.75); }
+}
+</style>
 </head>
 <body>
-<button id='top50Btn' onclick='showTop50()'>TOP 50</button>
-<!-- QR GAME -->
-<div style="position:fixed; top:1px; right:1px; z-index:9999;">
-  <img src="qr_game_link.png" style="width:60px; height:auto; border-radius:8px;">
+<!-- QR TO CHO TRANG ĐẦU TIÊN -->
+<div id="bigQR">
+<img alt="QR Game" src="qr_game_link.png"/>
 </div>
-
-
+<button id="top50Btn" onclick="showTop50()">TOP 50</button>
+<!-- QR GAME -->
+<div id="smallQR" style="display:none; position:fixed; top:1px; right:1px; z-index:9999;">
+<img src="qr_game_link.png" style="width:60px; height:auto; border-radius:8px; padding:2px"/>
+</div>
 <!-- === NHẠC NỀN === -->
-<audio id="bgMusic" loop>
-  <source src="music.mp3" type="audio/mpeg">
+<audio id="bgMusic" loop="">
+<source src="music.mp3" type="audio/mpeg"/>
 </audio>
-
 <!-- === ÂM THANH ĐÚNG – SAI === -->
 <audio id="correctSound">
-  <source src="correct.mp3" type="audio/mpeg">
+<source src="correct.mp3" type="audio/mpeg"/>
 </audio>
-
 <audio id="wrongSound">
-  <source src="wrong.mp3" type="audio/mpeg">
+<source src="wrong.mp3" type="audio/mpeg"/>
 </audio>
-
 <!-- INTRO -->
 <div id="introContainer">
-  <div id="introText"></div>
-  
-<div id="nameBox" style="display:none; margin-top:20px; text-align:center;">
-  <label>Thông tin người chơi:</label><br><br>
-  <input id="playerName" type="text" placeholder="Họ và tên" style="padding:10px;border-radius:10px;margin:5px;"><br>
-  <input id="playerClass" type="text" placeholder="Lớp" style="padding:10px;border-radius:10px;margin:5px;"><br>
-  <input id="playerSchool" type="text" placeholder="Trường" style="padding:10px;border-radius:10px;margin:5px;"><br>
-  <button onclick="startGame()" style="padding:10px 20px;border-radius:10px;">Bắt đầu</button>
+<div id="introText"></div>
+<div id="nameBox" style="margin-top:20px; text-align:center;">
+<button onclick="startGame()" style="padding:10px 20px;border-radius:10px;">
+      Bắt đầu
+    </button>
 </div>
-
 </div>
-
 <!-- NÚT HIỂN THỊ HƯỚNG DẪN -->
 <div style="text-align:center; margin-top:10px;">
-  <button id="towerGuideBtn" style="padding:10px 16px; background:#00a8ff; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;" onclick="loadMyRank()">Hướng dẫn Tháp</button>
+<button id="towerGuideBtn" onclick="loadMyRank()" style="padding:10px 16px; background:#00a8ff; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;">Hướng dẫn Tháp</button>
 </div>
-
 <!-- POPUP HƯỚNG DẪN -->
 <div id="towerGuidePopup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:50; justify-content:center; align-items:center; padding:20px; display:flex;">
-  <div style="background:#fff; max-width:700px; width:100%; border-radius:12px; padding:20px; box-shadow:0 12px 35px rgba(0,0,0,0.35); overflow:auto; max-height:80vh;">
-    <h2 style="margin-top:0; color:#0077c8;">Hướng dẫn sử dụng — 4 tòa tháp</h2>
-    <p><strong>Mục tiêu:</strong> Trả lời đúng các câu hỏi để nâng cấp 4 tòa tháp lên mức tối đa.</p>
-    <ol style="text-align:left; padding-left:18px;">
-      <li><strong>Nhập tên:</strong> Nhập tên rồi nhấn <em>Bắt đầu</em>.</li>
-      <li><strong>Chọn tòa tháp:</strong> Nhấp vào tòa tháp bạn muốn trả lời.</li>
-      <li><strong>Trả lời 1 câu:</strong> Mỗi tháp chỉ có 1 câu hỏi, chọn 1 trong 3 đáp án.</li>
-      <li><strong>Nâng cấp :</strong> Nếu đúng, tháp sẽ đạt mức tối đa ngay.</li>
-      <li><strong>Thử lại khi sai:</strong> Nếu sai, có thông báo, bạn có thể thử lại.</li>
-      <li><strong>Hoàn thành trò chơi:</strong> Khi cả 4 tháp đều đạt mức tối đa, màn khác sẽ xuất hiện.</li>
-    </ol>
-    <p style="font-size:13px; color:#555; margin-top:10px;">Bạn có thể làm tháp theo bất kỳ thứ tự nào. Trò chơi sẽ đếm thời gian bạn chơi khi bạn nhấn bắt đầu.</p>
-    <div style="text-align:right; margin-top:12px;">
-      <button style="padding:10px 16px; background:#ff6b6b; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;" onclick="closeTowerGuide()">Đóng</button>
-    </div>
-  </div>
+<div style="background:#fff; max-width:700px; width:100%; border-radius:12px; padding:20px; box-shadow:0 12px 35px rgba(0,0,0,0.35); overflow:auto; max-height:80vh;">
+<h2 style="margin-top:0; color:#0077c8;">Hướng dẫn sử dụng — 4 tòa tháp</h2>
+<p><strong>Mục tiêu:</strong> Trả lời đúng các câu hỏi để nâng cấp 4 tòa tháp lên mức tối đa.</p>
+<ol style="text-align:left; padding-left:18px;">
+<li><strong>Chọn tòa tháp :</strong> Nhấp vào tòa tháp bạn muốn trả lời.</li>
+<li><strong>Trả lời câu hỏi:</strong> Mỗi tháp chỉ có 1 câu hỏi, chọn 1 trong 3 đáp án.</li>
+<li><strong>Nâng cấp :</strong> Nếu đúng, tháp sẽ đạt mức tối đa ngay.</li>
+<li><strong>Thử lại khi sai:</strong> Nếu sai, có thông báo, bạn có thể thử lại.</li>
+<li><strong>Hoàn thành một phần của hoạt động 1:</strong> Khi cả 4 tháp đều đạt mức tối đa, màn khác sẽ xuất hiện.</li>
+</ol>
+<div style="text-align:right; margin-top:12px;">
+<button onclick="closeTowerGuide()" style="padding:10px 16px; background:#ff6b6b; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;">Đóng</button>
 </div>
-
+</div>
+</div>
 <!-- Hướng dẫn trên tháp -->
 <div id="towerGuide" style="display:none;">
   Chọn vào mỗi tòa tháp — mỗi tòa tượng trưng cho một tài khoản của An. Nhấp vào tháp để đặt mật khẩu mạnh!
 </div>
-
 <!-- GAME -->
 <h1 id="gameTitle">Mini Game: Chọn mật khẩu mạnh để nâng cấp tháp</h1>
 <div class="game-area" id="gameArea">
-  <div class="tower" id="tower1"><div class="roof"></div></div>
-  <div class="tower" id="tower2"><div class="roof"></div></div>
-  <div class="tower" id="tower3"><div class="roof"></div></div>
-  <div class="tower" id="tower4"><div class="roof"></div></div>
-  <div class="character" id="character">😊</div>
+<div class="tower" id="tower1"><div class="roof"></div></div>
+<div class="tower" id="tower2"><div class="roof"></div></div>
+<div class="tower" id="tower3"><div class="roof"></div></div>
+<div class="tower" id="tower4"><div class="roof"></div></div>
+<div class="character" id="character">😊</div>
 </div>
-
 <!-- POPUP -->
 <div class="popup" id="popup">
-  <h2 id="questionTitle">Chọn mật khẩu</h2>
-  <div id="answers"></div>
+<h2 id="questionTitle">Chọn mật khẩu</h2>
+<div id="answers"></div>
 </div>
-
 <!-- POPUP CUỐI THÁP -->
 <div class="popup" id="finalPopup">
-  <h2>Chúc mừng!</h2>
-  <p>Bạn đã giúp An đặt mật khẩu mạnh, nhưng để sau này An không đặt mật khẩu yếu nữa, bạn nên cho An 1 số lời khuyên.</p>
-  <button id="nextGameBtn">Được thôi</button>
+<h2>Chúc mừng!</h2>
+<p>Bạn đã giúp An đặt mật khẩu mạnh, nhưng để sau này An không đặt mật khẩu yếu nữa, bạn nên cho An 1 số lời khuyên.</p>
+<button id="nextGameBtn">Được thôi</button>
 </div>
-
 <!-- POPUP LỜI KHUYÊN -->
 <div class="popup" id="advicePopup">
-  <h2 id="adviceQuestion">Câu hỏi</h2>
-  <div id="adviceAnswers"></div>
+<h2 id="adviceQuestion">Câu hỏi</h2>
+<div id="adviceAnswers"></div>
 </div>
-
 <!-- OUTRO -->
 <div id="outroScreen">
-  <h1 id="outroTitle" style="opacity:0; transition:opacity 1s;">Thank for playing!</h1>
-  <p id="outroText" style="opacity:0; transition:opacity 1s;">Bạn đã hoàn thành trò chơi.Hãy chia sẻ cho bạn bè cùng chơi nhé.Hẹn gặp lại!Game được tạo bởi Hưng và Quân.</p>
-  <div id="outroCharacter" style="width:80px; height:80px; background:#ffeb3b; border-radius:50%; margin-top:30px; display:flex; justify-content:center; align-items:center; font-size:36px; opacity:0; transition:opacity 1s;">😊</div>
+<h1 id="outroTitle" style="opacity:0; transition:opacity 1s;">Thank for playing!</h1>
+<p id="outroText" style="opacity:0; transition:opacity 1s;">Bạn đã hoàn thành trò chơi.Hãy chia sẻ cho bạn bè cùng chơi nhé.Hẹn gặp lại!<br/>Game được tạo bởi Tạ Duy Hưng và Lê Hoàng Quân.</p>
+<div id="outroCharacter" style="width:80px; height:80px; background:#ffeb3b; border-radius:50%; margin-top:30px; display:flex; justify-content:center; align-items:center; font-size:36px; opacity:0; transition:opacity 1s;">😊</div>
 </div>
-
 <!-- ======= NEW: CONGRATS + VIDEO + QUIZ POPUPS (THÊM MỚI, KHÔNG SỬA GAME) ======= -->
-
 <!-- Congratulation popup (shown when showOutro is called) -->
 <div class="popup" id="congratsPopup" style="display:none; width:420px;">
-  <h2>Chúc mừng — Bạn đã hoàn thành trò chơi!</h2>
-  <p class="line">Bạn đã giúp An cải thiện bảo mật. Xem video ngắn để hiểu thêm tình huống lừa đảo.</p>
-  <button id="watchVideoBtn">Xem video hướng dẫn</button>
-  <button id="skipToQuizBtn" style="background:#ff6b6b; margin-top:8px;">Bỏ qua video — Trả lời câu hỏi</button>
+<h2>Chúc mừng — Bạn đã hoàn thành trò chơi!</h2>
+<p class="line">Bạn đã giúp An cải thiện bảo mật. Chúng ta sẽ chuyển sang hoạt động 2, hãy xem video để hiểu thêm về các tình huống lừa đảo nhé.</p>
+<button id="watchVideoBtn">Xem video hướng dẫn</button>
+<button id="skipToQuizBtn" style="background:#ff6b6b; margin-top:8px;">Bỏ qua video — Trả lời câu hỏi</button>
 </div>
-
 <!-- Video popup -->
 <div class="popup" id="videoPopup" style="display:none; width:760px; max-width:95vw;">
-  <h2>Video minh họa tình huống lừa đảo</h2>
-  <video id="lessonVideo" controls>
-    <source src="video.mp4" type="video/mp4">
+<h2>Video minh họa tình huống lừa đảo</h2>
+<video controls="" id="lessonVideo">
+<source src="video.mp4" type="video/mp4"/>
     Trình duyệt của bạn không hỗ trợ thẻ video.
   </video>
-  <button id="skipVideoBtn" style="margin-top:10px; background:#ff6b6b;">Bỏ qua video</button>
+<button id="skipVideoBtn" style="margin-top:10px; background:#ff6b6b;">Bỏ qua video</button>
 </div>
-
 <!-- Quiz popup (4 câu hỏi) -->
 <div class="popup" id="quizPopup" style="display:none; width:600px; max-width:95vw;">
-  <h2 id="quizTitle">Bài kiểm tra nhanh</h2>
-  <div id="quizBody" style="margin-top:8px; text-align:left;">
-    <!-- Nội dung câu hỏi sẽ được chèn bằng JS -->
-  </div>
-  <div style="margin-top:12px;">
-    <button id="nextQuizBtn" style="background:#00a8ff;">Tiếp tục</button>
-  </div>
+<h2 id="quizTitle">Bài kiểm tra nhanh</h2>
+<div id="quizBody" style="margin-top:8px; text-align:left;">
+<!-- Nội dung câu hỏi sẽ được chèn bằng JS -->
+</div>
+<div style="margin-top:12px;">
+<button id="nextQuizBtn" style="background:#00a8ff;">Tiếp tục</button>
+</div>
 </div>
 <div id="activity3Screen" style="display:none; flex-direction:column; justify-content:center; align-items:center; height:100vh; padding:20px; text-align:center; background:#87CEFA;">
-  <h1>Hoạt động 3</h1>
-  <p style="font-size:20px; color:#0077c8; margin-bottom:15px;">
+<h1>Hoạt động 3</h1>
+<p style="font-size:20px; color:#0077c8; margin-bottom:15px;">
     Lan đang làm poster tuyên truyền an toàn mạng nhưng bạn ấy chỉ mới xong phần trình bày, bạn hãy giúp bạn ấy phần nội dung nhé.
   </p>
-  <button id="startQuizBtn" style="margin-top:20px; padding:10px 16px; background:#00a8ff; color:#fff; border:none; border-radius:8px; cursor:pointer;">OK</button>
+<button id="startQuizBtn" style="margin-top:20px; padding:10px 16px; background:#00a8ff; color:#fff; border:none; border-radius:8px; cursor:pointer;">OK</button>
 </div>
-
 <div id="quiz" style="display:none; flex-direction:column; align-items:center; gap:12px; margin-top:20px;">
-  <div id="question" style="font-size:20px; font-weight:600;"></div>
-  <div id="options" style="display:flex; flex-direction:column; gap:10px;"></div>
+<div id="question" style="font-size:20px; font-weight:600;"></div>
+<div id="options" style="display:flex; flex-direction:column; gap:10px;"></div>
 </div>
-
 <div id="poster" style="display:none; margin-top:20px; font-size:18px;">
-  <img src="posternhé.png" alt="Poster" style="max-width:90%; border-radius:12px;">
+<img alt="Poster" src="posternhé.png" style="max-width:90%; border-radius:12px;"/>
 </div>
 <!-- ========================================================================== -->
-
 <script>
 // --- INTRO ---
-const introLines=["Bạn là 1 nhà thám hiểm internet...","Trong lúc thám hiểm bạn gặp Minh – 1 người đang bị những tên hacker đánh cắp thông tin...","Nhiệm vụ của bạn là giúp Minh đặt lại mật khẩu!"];
+const introLines=["Bạn là 1 nhà thám hiểm internet...","Trong lúc thám hiểm bạn gặp An – 1 người đang bị những tên hacker đánh cắp thông tin...","Nhiệm vụ của bạn là giúp An đặt lại mật khẩu!"];
 let lineIndex=0,charIndex=0;
 const introText=document.getElementById("introText");
 const nameBoxEl=document.getElementById("nameBox");
@@ -339,7 +335,7 @@ const towersData = {
   tower1: [{question: "Chọn mật khẩu mạnh.", answers: [{ text: "12345", correct: false },{ text: "Huy3#2025", correct: true },{ text: "abcdef", correct: false }]}],
   tower2: [{question: "Chọn mật khẩu có số và chữ viết hoa.", answers: [{ text: "Pass1234", correct: true },{ text: "abcdefg", correct: false },{ text: "Password", correct: false }]}],
   tower3: [{question: "Chọn mật khẩu có chữ hoa, chữ thường,số và ký tự đặc biệt.", answers: [{ text: "ABCDEFG", correct: false },{ text: "1234567", correct: false },{ text: "Hoctap@1235", correct: true }]}],
-  tower4: [{question: "Chọn mật khẩu đủ 8 ký tự trở lên.", answers: [{ text: "12a424a", correct: false },{ text: "SafePassw1", correct: true },{ text: "chamchi@!", correct: false }]}]
+  tower4: [{question: "Chọn mật khẩu đủ 8 ký tự trở lên.", answers: [{ text: "12a424a", correct: false },{ text: "chamchi@!", correct: true },{ text: "3d5cc2", correct: false }]}]
 };
 
 const towers=document.querySelectorAll('.tower');
@@ -360,16 +356,14 @@ const outroChar=document.getElementById('outroCharacter');
 let currentTower=null;
 let currentLevel={tower1:0,tower2:0,tower3:0,tower4:0};
 
-function startGame(){
-  let name = document.getElementById('playerName').value.trim();
-  let cls = document.getElementById('playerClass').value.trim();
-  let school = document.getElementById('playerSchool').value.trim();
-  if(!name || !cls || !school){ alert("Vui lòng nhập đầy đủ tên, lớp, trường!"); return;}
-  const nameInput=document.getElementById('playerName').value;
-  document.getElementById('introContainer').style.display="none";
-  towerGuide.style.display="block";
-  gameTitle.style.display="block";
-  gameArea.style.display="flex";
+function startGame() {
+  // Ẩn intro
+  document.getElementById('introContainer').style.display = "none";
+
+  // Hiện các phần của game
+  towerGuide.style.display = "block";
+  gameTitle.style.display = "block";
+  gameArea.style.display = "flex";
 }
 
 towers.forEach(tower=>{
@@ -526,10 +520,10 @@ function openTowerGuide(){
   document.getElementById('towerGuidePopup').style.display='flex';
 }
 
-function closeTowerGuide(){
+function closeTowerGuide(){ document.body.classList.add('hide-big-qr');
   document.getElementById('towerGuidePopup').style.display='none';
   typeIntro();  // << BẮT ĐẦU INTRO SAU KHI ẤN ĐÓNG
-}
+ document.getElementById('smallQR').style.display='block';}
 
 // Hide poster when story shown
 document.getElementById('storyOverlay').addEventListener('transitionstart',()=>{
@@ -547,7 +541,6 @@ function computeScore(correct, time){
 }
 
 </script>
-
 <!-- ======= APPENDED SCRIPT: chúc mừng → video → quiz (KHÔNG SỬA GAME) ======= -->
 <script>
 /*
@@ -589,50 +582,49 @@ const nextQuizBtn = document.getElementById('nextQuizBtn');
 const finalQuiz = [
   {
     id: 1,
-    type: 'single', // single-choice
+    type: 'single',
     q: 'Câu 1: Đâu "KHÔNG" phải là nguyên nhân khiến Minh bị lừa đảo qua mạng?',
     options: [
       'Tin tưởng vào bạn bè',
       'Hấp tấp, thiếu suy nghĩ',
       'Vì nhà Minh giàu'
     ],
-    correctIndex: 2 // "Vì nhà Minh giàu" là đáp án đúng (không phải nguyên nhân)
+    correctIndex: 2
   },
   {
     id: 2,
-    type: 'multi', // multiple-choice (chọn tất cả thủ đoạn đã dùng)
-    q: 'Câu 2: Đối tượng lừa đảo đã sử dụng những thủ đoạn nào để khiến nhân vật tin là thật? (Chọn những câu đúng)',
+    type: 'single',
+    q: 'Câu 2: Đối tượng lừa đảo đã sử dụng thủ đoạn nào để khiến nhân vật tin là thật?',
     options: [
-      'A. Giả mạo tài khoản bạn bè và nhắn tin với giọng điệu quen thuộc.',
-      'B. Tiếp cận nạn nhân làm quen và dần dần trở thành bạn bè để lừa đảo',
-      'C. Hối thúc nhân vật thực hiện nhanh để “không bỏ lỡ cơ hội”.'
+      'Giả mạo tài khoản bạn bè và nhắn tin với giọng điệu quen thuộc.',
+      'Tiếp cận nạn nhân làm quen và dần dần trở thành bạn bè để lừa đảo.',
+      'Hối thúc nhân vật thực hiện nhanh để “không bỏ lỡ cơ hội”.'
     ],
-    // Trong tình huống mô tả, cả A, B, C đều là thủ đoạn được sử dụng → nên tất cả đều đúng
-    correctIndexes: [0,1,2]
+    correctIndex: 1 // đáp án bạn yêu cầu
   },
   {
     id: 3,
-    type: 'multi',
-    q: 'Câu 3: Sau khi bị lừa đảo, nhân vật đã gặp phải hậu quả gì? (Chọn những câu đúng)',
+    type: 'single',
+    q: 'Câu 3: Sau khi bị lừa đảo, nhân vật đã gặp phải hậu quả gì?',
     options: [
-      'Mất tiền',
-      'Lộ thông tin cá nhân, tài khoản mạng xã hội bị chiếm quyền.',
-      'Bị đe dọa, làm phiền hoặc tiếp tục bị nhắn tin lừa đảo.'
+      'Mất tiền.',
+      'Lộ thông tin cá nhân / tài khoản bị chiếm quyền.',
+      'Bị đe dọa hoặc tiếp tục bị nhắn tin lừa đảo.',
+      'Tất cả các hậu quả trên.'
     ],
-    // Tất cả đều là hậu quả khả dĩ → coi cả 3 là đúng
-    correctIndexes: [0,1,2]
+    correctIndex: 3
   },
   {
     id: 4,
-    type: 'multi',
-    q: 'Câu 4: Thông điệp của đoạn video trên là gì? (Chọn tất cả câu đúng)',
+    type: 'single',
+    q: 'Câu 4: Thông điệp của đoạn video trên là gì?',
     options: [
       'Không nên tin tưởng tuyệt đối vào bất kỳ ai trên mạng, kể cả người quen.',
-      'Internet luôn an toàn nên có thể thoải mái chia sẻ thông tin cá nhân',
+      'Internet luôn an toàn nên có thể thoải mái chia sẻ thông tin cá nhân.',
       'Cảnh giác với đường link, quà tặng, ưu đãi được gửi đột ngột.'
     ],
-    // Đáp án đúng: 1 và 3 (khuyến cáo cảnh giác; câu 2 sai)
-    correctIndexes: [0,2]
+    // Bạn nói đáp án 0 không đúng → bạn cho tớ biết đáp án đúng để tớ điền vào!
+    correctIndex: 0
   }
 ];
 
@@ -795,7 +787,7 @@ function checkAnswer(selected){
     // 🔊Âm thanh đúng
     correctSound.currentTime = 0;
     correctSound.play();
-
+    alert("Đúng rồi");
     current++;
     showQuestion();
 
@@ -935,8 +927,6 @@ function computeScore(correct, time){
 }
 
 </script>
-
-
 <!-- BEGIN: Poster congrats + story + super-quiz (added by assistant) -->
 <style>
 /* Poster congrats popup */
@@ -952,93 +942,142 @@ function computeScore(correct, time){
 #posterCongrats .right { flex:1; text-align:left; }
 #posterCongrats h2 { margin-top:0; color:#0077c8; }
 .smallBtn { padding:10px 14px; border-radius:8px; border:none; cursor:pointer; font-weight:600; background:#00a8ff; color:#fff; }
-.ghostBtn { background:#ff6b6b; }
+.ghostBtn { background:#00a8ff; }
 .storyText { max-height:360px; overflow:auto; text-align:left; line-height:1.5; color:#073b4c; }
 #superQuizBox .q { font-weight:700; margin-bottom:10px; }
 #superQuizBox .options button { display:block; width:100%; margin:8px 0; padding:10px; border-radius:8px; border:none; cursor:pointer; background:#00a8ff; color:#fff; font-weight:600; }
 #superQuizEndBox .animatedText { font-size:20px; line-height:1.6; text-align:center; padding:20px; }
 </style>
-
 <!-- Poster congrats overlay -->
-<div id="posterCongratsOverlay" aria-hidden="true">
-  <div id="posterCongrats" role="dialog">
-    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-      <h2>Chúc mừng — Bạn đã hoàn thành poster giúp Lan!</h2>
-      <button onclick="closePosterCongrats()" style="background:transparent;border:none;font-size:20px;cursor:pointer;">✕</button>
-    </div>
-    <div class="content" style="margin-top:10px;">
-      <div class="left"><img src="posternhé.png" alt="Poster"></div>
-      <div class="right">
-        <p>Bạn đã hoàn thành poster giúp Lan. Hãy nhấn tiếp tục để nghe một câu chuyện dựa trên một câu chuyện có thật giúp hiểu thêm về cách kẻ gian lợi dụng chị A.</p>
-        <div style="margin-top:12px; display:flex; gap:8px;">
-          <button class="smallBtn" id="pcContinueBtn">Tiếp tục</button>
-          <button class="smallBtn ghostBtn" onclick="closePosterCongrats()">Đóng</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<div aria-hidden="true" id="posterCongratsOverlay">
+<div id="posterCongrats" role="dialog">
+<div style="display:flex; justify-content:space-between; align-items:flex-start;">
+<h2>Chúc mừng — Bạn đã hoàn thành poster giúp Lan!</h2>
+<button onclick="closePosterCongrats()" style="background:transparent;border:none;font-size:20px;cursor:pointer;">✕</button>
 </div>
-
+<div class="content" style="margin-top:10px;">
+<div class="left"><img alt="Poster" src="posternhé.png"/></div>
+<div class="right">
+<p>Bạn đã hoàn thành poster giúp Lan. Hãy nhấn tiếp tục để nghe một câu chuyện dựa trên một câu chuyện có thật giúp hiểu thêm về cách kẻ gian lợi dụng chị A.</p>
+<div style="margin-top:12px; display:flex; gap:8px;">
+<button class="smallBtn" id="pcContinueBtn">Tiếp tục</button>
+</div>
+</div>
+</div>
+</div>
+</div>
 <!-- Confirm to view story -->
-<div id="confirmStoryOverlay" aria-hidden="true">
-  <div id="confirmStory">
-    <h2>Bạn có muốn nghe chuyện của chị A (dựa trên câu chuyện có thật)?</h2>
-    <p style="color:#333;">Nghe câu chuyện sẽ giúp bạn hiểu rõ cách lừa đảo vận hành. Bạn có thể <strong>Bỏ qua</strong> và trả lời câu hỏi ngay.</p>
-    <div style="display:flex; gap:10px; margin-top:12px;">
-      <button class="smallBtn" id="agreeStoryBtn">Đồng ý — Nghe chuyện</button>
-      <button class="smallBtn ghostBtn" id="skipStoryBtn">Bỏ qua — Trả lời câu hỏi</button>
-    </div>
-  </div>
+<div aria-hidden="true" id="confirmStoryOverlay">
+<div id="confirmStory">
+<h2> Bạn có muốn nghe chuyện của chị A (dựa trên câu chuyện có thật)?</h2>
+<p style="color:#333;">Nghe câu chuyện sẽ giúp bạn hiểu rõ cách lừa đảo vận hành. Bạn có thể <strong>Bỏ qua</strong> và trả lời câu hỏi ngay.</p>
+<div style="display:flex; gap:10px; margin-top:12px;">
+<button class="smallBtn" id="agreeStoryBtn">Đồng ý — Nghe chuyện</button>
 </div>
-
+</div>
+</div>
 <!-- Story overlay -->
-<div id="storyOverlay" aria-hidden="true">
-  <div id="storyBox">
-    <h2>Chuyện của chị A</h2>
-    <div class="storyText" id="storyText">
-      <p>Chị A làm việc trong một cửa hàng nhỏ. Một buổi chiều, chị nhận được cuộc gọi từ một người tự xưng là shipper. Anh ta nói rằng đang giữ một món hàng gửi cho chị, nhưng chị A bảo rằng mình không hề đặt hàng.</p>
-      <p>Bạn đọc tiếp dưới...</p>
-      <p>Ban đầu, chị A rất tỉnh táo và trả lời rõ ràng: “Tôi không đặt gì cả, anh giao nhầm rồi.” Shipper vẫn khăng khăng rằng đây là hàng “đặt trước”, yêu cầu chị phải ra nhận để kiểm tra. Chị A từ chối thêm vài lần nhưng anh ta liên tục gọi lại, giọng ngày càng gấp gáp và khó chịu.</p>
-      <p>Một lúc sau, shipper hỏi một câu khiến chị bắt đầu lo lắng: “Chị có biết trong kiện này có hàng cấm không? Chị không ký nhận là chị chịu trách nhiệm đó.” Chị A bối rối. Trong đầu chị chỉ còn lại một suy nghĩ: “Nếu thật là hàng cấm thì sao? Mình không nhận thì có bị nghi oan không?” Dù trước đó rất tỉnh, chị bắt đầu sợ. Anh shipper lợi dụng cảm giác ấy, liên tục thúc ép: “Nếu chị không muốn bị phạt, tôi sẽ hướng dẫn chị làm thủ tục xác minh nhanh. Chị chỉ cần chuyển khoản phí kiểm tra để hệ thống đóng xác nhận.”</p>
-      <p>Chị A mở tài khoản nhưng trong thẻ không đủ tiền. Lập tức, người kia tiếp tục “chỉ dẫn”: “Không sao, chị vay tạm ngân hàng online đi cho nhanh. Tôi gửi chị link nè, chỉ cần bấm vô là vay được 25 triệu. Lãi suất thấp lắm, xử lý 5 phút.” Không kịp suy nghĩ, chị A nhấn vào đường link vay tiền. Trang web hiện lên rất giống ngân hàng thật, có logo, số hợp đồng, thậm chí chữ ký điện tử. Vì đang hoảng loạn, chị nhập toàn bộ thông tin cá nhân, rồi chuẩn bị bấm xác nhận vay.</p>
-      <p>Đúng lúc đó, cô đồng nghiệp đi ngang thấy chị ngồi quá lâu, mặt tái và tay run run nên bước đến hỏi: “Chị làm gì mà căng thẳng vậy?” Nghe chị A kể lại, cô lập tức hiểu đó là lừa đảo chiếm đoạt tài sản. Cô giật lại điện thoại, tắt trang web giả và yêu cầu chị A không chuyển bất kỳ đồng nào, nhưng chị A đã vay tiền trên một app ngân hàng vay 25 triệu với lãi suất siêu cao. Hên chỉ một click bấm vào màn hình nữa thôi là, chị A đã: Chuyển tiền cho kẻ lừa đảo. Nhờ có người can thiệp kịp thời, chị A may mắn không mất tiền. Nhưng chị phải gánh món lãi khổng lồ.</p>
-      <p>Sau sự việc, chị A nói trong run rẩy: “Lúc đầu tôi tỉnh táo lắm… nhưng họ nói hàng cấm làm tôi sợ quá, mất hết lý trí.”</p>
-    </div>
-    <audio id="storyAudio" controls style="width:100%; margin-top:12px;">
-      <source src="voice1.mp3" type="audio/mpeg">
+<div aria-hidden="true" id="storyOverlay">
+<div id="storyBox">
+<h2>Chuyện của chị A</h2>
+<div class="storyText" id="storyText">
+<p>Một sinh viên năm nhất làm thêm tại một cửa hàng nhỏ. Một buổi chiều, bạn nhận được cuộc gọi từ một người tự xưng là shipper. Anh ta nói rằng đang giữ một món hàng gửi cho bạn, nhưng sinh viên này khẳng định mình không hề đặt hàng. Ban đầu, bạn rất tỉnh táo và trả lời rõ ràng:.</p>
+<p>Bạn đọc tiếp dưới...</p>
+<p>“Tôi không đặt gì cả, anh giao nhầm rồi.”
+
+Shipper vẫn khăng khăng rằng đây là hàng “đặt trước”, yêu cầu bạn phải ra nhận để kiểm tra. Sinh viên năm nhất này từ chối thêm vài lần nhưng anh ta liên tục gọi lại, giọng ngày càng gấp gáp và khó chịu.
+Dù vậy, bạn vẫn rất tỉnh táo và tin chắc rằng đây là lừa đảo nên đã cúp máy.
+
+Một tuần sau
+
+Có một số lạ gọi đến. Người đàn ông tự xưng là công an, giọng nghiêm nghị:
+
+“Em có biết là số điện thoại của anh shipper này đã từng gọi đến em nhiều lần không,và anh ta đã báo cho chúng tôi,có liên quan tới gói hàng của chị.Gói đó có chứa chất cấm,yêu cầu chị đến cơ quan chúng tôi làm việc gấp.”</p>
+<p>Ngay lập tức, sinh viên năm nhất nhận ra:
+Đó chính là số điện thoại đã gọi mình tuần trước.
+
+Nghe đến chữ “hàng cấm”, bạn bắt đầu bối rối.
+Trong đầu chỉ còn một suy nghĩ:
+
+Nếu thật là hàng cấm thì sao? Mình không nhận thì có bị nghi oan không?
+
+Càng hoang mang, bạn càng bị dẫn dắt.
+
+Người tự xưng công an nói thêm, giọng hù dọa:
+
+“Nếu em không hợp tác, chúng tôi buộc phải đưa em vào diện nghi vấn.”
+
+Rồi ông ta bảo sẽ “chuyển máy cho cán bộ hỗ trợ” để làm thủ tục xác minh.”</p>
+<p>Vài giây sau, một người khác nói chuyện – thực chất vẫn là kẻ lừa đảo nhưng đổi vai:
+
+“Nếu em không tới được mà cũng không muốn bị phạt, tôi sẽ hướng dẫn em xác minh nhanh. Em chỉ cần đóng phí kiểm tra hệ thống để xóa tên khỏi hồ sơ.”
+
+Cảm giác hoang mang ngày càng lớn.
+Sinh viên mở tài khoản để chuyển phí nhưng tiền trong thẻ không đủ.
+
+Lập tức, hắn dụ tiếp:
+
+“Không sao. Em vay tạm ngân hàng online đi cho nhanh. Tôi gửi link nè, chỉ cần bấm là vay được 25 triệu. Xử lý 5 phút.”
+
+Cạm bẫy cuối
+
+Trong cơn sợ hãi, sinh viên năm nhất ấn vào link.
+Trang web hiện lên giống hệt ngân hàng thật, có logo, số hợp đồng, chữ ký điện tử.
+
+Không kịp suy nghĩ, bạn nhập toàn bộ thông tin cá nhân, rồi chuẩn bị bấm “Xác nhận vay”.
+
+Đúng lúc đó, đồng nghiệp trong cửa hàng đi ngang thấy mặt bạn tái mét, tay run run nên hỏi:
+
+“Em làm gì mà căng thẳng vậy?”.</p>
+<p>Nghe bạn kể vài câu, cô đồng nghiệp lập tức hiểu đây là màn giả danh công an – lừa đảo tài chính.
+Cô giật lại điện thoại, tắt trang web giả và yêu cầu bạn đừng chuyển bất kỳ đồng nào.
+
+Nhưng đã quá muộn một phần:
+Sinh viên năm nhất đã vay tiền thật từ một app cho vay với lãi suất cực cao – 25 triệu.
+
+Chỉ còn thiếu một cú bấm nữa thôi, bạn đã:
+
+Chuyển toàn bộ số tiền đó cho kẻ lừa đảo.
+
+Thoát nạn – nhưng vẫn phải trả giá
+
+Nhờ sự can thiệp kịp thời, sinh viên năm nhất may mắn không mất tiền cho bọn lừa đảo.
+Nhưng bạn phải gánh khoản nợ lãi khổng lồ từ app vay tiền.</p>
+<p>Sau sự việc, sinh viên run rẩy nói:
+
+“Lúc đầu em tỉnh táo lắm… nhưng họ nói hàng cấm, rồi còn giả danh công an… làm em sợ quá, mất hết lý trí.”</p>
+</div>
+<audio controls="" id="storyAudio" style="width:100%; margin-top:12px;">
+<source src="voice1.mp3" type="audio/mpeg"/>
       Trình duyệt không hỗ trợ audio.
     </audio>
-    <div style="display:flex; gap:10px; margin-top:12px;">
-      <button class="smallBtn" id="storyOkBtn">Đã nghe xong — Qua câu hỏi</button>
-      <button class="smallBtn ghostBtn" id="storySkipBtn">Bỏ qua — Qua câu hỏi</button>
-    </div>
-  </div>
+<div style="display:flex; gap:10px; margin-top:12px;">
+<button class="smallBtn ghostBtn" id="storySkipBtn">Đã nghe xong — Qua câu hỏi</button>
 </div>
-
+</div>
+</div>
 <!-- Super quiz popup -->
-<div id="superQuizPopup" aria-hidden="true">
-  <div id="superQuizBox">
-    <h2>🧠🔥 5 Câu trắc nghiệm cấp độ SIÊU TỐI THƯỢNG</h2>
-    <div id="superQuizContent">
-      <!-- question/content injected by JS -->
-    </div>
-  </div>
+<div aria-hidden="true" id="superQuizPopup">
+<div id="superQuizBox">
+<h2>🧠🔥 5 Câu trắc nghiệm khó</h2>
+<div id="superQuizContent">
+<!-- question/content injected by JS -->
 </div>
-
+</div>
+</div>
 <!-- Super quiz end popup with animated text (will play mp3) -->
-<div id="superQuizEnd" aria-hidden="true">
-  <div id="superQuizEndBox">
-    <h2>Kết thúc bài kiểm tra</h2>
-    <div class="animatedText" id="animatedText">Cảm ơn bạn đã hoàn thành! Hãy luôn cảnh giác và chia sẻ kiến thức này với người thân.</div>
-    <audio id="endAudio" style="display:none;">
-      <source src="voice1.mp3" type="audio/mpeg">
-    </audio>
-    <div style="display:flex; justify-content:center; margin-top:12px;">
-      <button class="smallBtn" onclick="closeSuperQuizEnd()">Đóng</button>
-    </div>
-  </div>
+<div aria-hidden="true" id="superQuizEnd">
+<div id="superQuizEndBox">
+<h2>Kết thúc bài kiểm tra</h2>
+<div class="animatedText" id="animatedText">Cảm ơn bạn đã hoàn thành! Hãy luôn cảnh giác và chia sẻ kiến thức này với người thân.</div>
+<audio id="endAudio" style="display:none;">
+<source src="voice1.mp3" type="audio/mpeg"/>
+</audio>
+<div style="display:flex; justify-content:center; margin-top:12px;">
+<button class="smallBtn" onclick="closeSuperQuizEnd()">Đóng</button>
 </div>
-
+</div>
+</div>
 <script>
 // --- Wire up interception of Hoạt động 3 final question ---
 // Keep reference to original checkAnswer if exists
@@ -1046,36 +1085,56 @@ const originalCheckAnswer = window.checkAnswer || null;
 
 // Super-quiz data (using the 4 questions provided in the user's text)
 const superQuiz = [
-  {
-    q: "1. Trong chuỗi diễn biến, đâu là điểm cho thấy kẻ lừa đảo không chỉ lợi dụng nỗi sợ của chị A, mà còn tạo ra một khuôn khổ nhận thức mới, khiến chị A đánh giá sai bản chất của sự việc?",
-    options: ["A. Sử dụng từ khóa 'hàng cấm' để tạo sợ hãi", "B. Ép thời gian bằng cách gọi liên tục", "C. Chuyển vai từ shipper → người hỗ trợ pháp lý mà không cần chứng minh", "D. Đưa link vay tiền với giao diện ngân hàng thật"],
-    correct: 2 // index 2 = C
-  },
-  {
-    q: "2. Ở góc độ nhận thức sai lệch (cognitive distortion), chị A mắc phải lỗi nào khiến bản thân không còn giữ được tiêu chí kiểm chứng thông tin?",
-    options: ["A. Catastrophizing (phóng đại hậu quả)", "B. Selective attention (chú ý chọn lọc về phía rủi ro)", "C. External validation trap (phụ thuộc hướng dẫn bên ngoài để quyết định)", "D. Confirmation bias (thiên kiến xác nhận)"],
-    correct: 2 // C
-  },
-  {
-    q: "3. Chi tiết nào cho thấy kẻ lừa đảo đã cố tình tạo 'paradox lựa chọn', khiến mọi đường chị A chọn đều dẫn đến kết quả có lợi cho tội phạm?",
-    options: ["A. 'Không nhận hàng thì chị chịu trách nhiệm.'", "B. 'Chỉ cần chuyển phí để xác minh.'", "C. 'Không đủ tiền thì vay ngân hàng online đi cho nhanh.'", "D. 'Trang web giống hệt ngân hàng thật.'"],
-    correct: 0 // A
-  },
-  {
-    q: "4. Phân tích theo mô hình tấn công tâm lý 'tầng áp lực kép', câu nói nào là sự kết hợp hoàn hảo nhất của đe dọa + giải pháp, khiến nạn nhân bị cuốn vào guồng?",
-    options: ["A. 'Trong kiện có hàng cấm, chị ký là chịu trách nhiệm.'", "B. 'Không muốn bị phạt thì tôi hướng dẫn thủ tục xác minh nhanh.'", "C. 'Tài khoản không đủ à? Vậy chị vay ngân hàng online đi cho lẹ.'", "D. 'Trang này xử lý nhanh lắm, 5 phút là xong.'"],
-    correct: 1 // B
-  },
-  {
-    q: "5. Chi tiết nào cho thấy chị A không còn hành động dựa trên thông tin khách quan mà dựa trên “áp lực khung cảnh” (contextual compulsion)?",
+ {
+    q: "1. Nhận diện điểm đột phá tâm lý: Trong toàn bộ kịch bản, thời điểm chính xác khiến sinh viên từ trạng thái tỉnh táo chuyển sang suy nghĩ lệch lạc nhất là lúc nào?",
     options: [
-      "A. Vào website giả mạo",
-      "B. Nhập thông tin cá nhân",
-      "C. Không đọc lãi suất nhưng vẫn bấm vay",
-      "D. Chuẩn bị chuyển tiền dù biết mình không đặt hàng"
+      "A. Khi shipper liên tục gọi và đổi giọng khó chịu",
+      "B. Khi nghe công an nói 'gói đó chứa chất cấm'",
+      "C. Khi được yêu cầu ra nhận hàng lần đầu",
+      "D. Khi thấy số điện thoại công an trùng với shipper"
     ],
-    correct: 2 // index 2 = C
-  }
+    correct: 1 // B
+},
+{
+    q: "2. Suy luận về cấu trúc tổ chức của kẻ lừa đảo: Việc một người đóng 3 vai (shipper → công an → cán bộ hỗ trợ) cho thấy điều gì?",
+    options: [
+      "A. Họ cố tình dùng nhiều vai để gây nhiễu loạn nhận thức",
+      "B. Họ có công nghệ giả số nên không cần nhiều người",
+      "C. Họ làm việc một mình nên phải kiêm nhiều vai",
+      "D. Họ thiếu kịch bản nên phải thay đổi tùy ý"
+    ],
+    correct: 0 // A
+},
+{
+    q: "3. Điểm phi logic lớn nhất: Trong đoạn sinh viên chuẩn bị bấm 'Xác nhận vay', đâu là tín hiệu phi logic rõ nhất chứng minh đây là lừa đảo?",
+    options: [
+      "A. Yêu cầu vay đúng 25 triệu thay vì số khác",
+      "B. Gửi link vay nhanh nhưng vẫn tự xưng 'công an xử lý hồ sơ'",
+      "C. Website có logo y như ngân hàng thật",
+      "D. Bảo xử lý chỉ trong 5 phút"
+    ],
+    correct: 1 // B
+},
+{
+    q: "4. Hệ quả nhận thức: Lý do sâu xa khiến sinh viên vẫn nhập toàn bộ thông tin dù nghi ngờ là gì?",
+    options: [
+      "A. Vì cảm giác 'nếu mình vô tội thì cứ hợp tác'",
+      "B. Vì lo bị phạt hành chính lớn",
+      "C. Vì tin ứng dụng vay là ứng dụng thật",
+      "D. Vì mệt mỏi vì bị gọi quá nhiều lần"
+    ],
+    correct: 0 // A
+},
+{
+    q: "5. Quyết định phản ứng tối ưu: Sau khi thoát nạn một phần nhưng vẫn mắc khoản nợ 25 triệu, phản ứng đúng nhất để giảm thiệt hại lâu dài là gì?",
+    options: [
+      "A. Gọi app vay để xin giãn nợ và tự trả dần",
+      "B. Chặn tất cả số lừa đảo và im lặng",
+      "C. Lập biên bản trình báo công an + liên hệ app vay để báo vụ lừa đảo và yêu cầu hỗ trợ xử lý",
+      "D. Trả ngay toàn bộ 25 triệu để cắt stress"
+    ],
+    correct: 2 // C
+}
 ];
 
 let superIndex = 0;
@@ -1233,8 +1292,6 @@ function computeScore(correct, time){
 
 </script>
 <!-- END: Poster congrats + story + super-quiz -->
-
-
 <script>
 // === Story Highlight Sync ===
 const storyTimings = [
@@ -1294,8 +1351,6 @@ function computeScore(correct, time){
 }
 
 </script>
-
-
 <script>
 // -- Ensure story audio uses relative path so it loads when opening file locally --
 (function(){
@@ -1386,8 +1441,6 @@ function computeScore(correct, time){
 }
 
 </script>
-
-
 <script>
 // --- Auto pause/resume background music when story popup opens/closes ---
 (function(){
@@ -1416,8 +1469,6 @@ function computeScore(correct, time){
 }
 
 </script>
-
-
 <script>
 // FIX 1 — Tắt hoàn toàn poster nền khi đang ở Hoạt động 3
 (function(){
@@ -1446,8 +1497,6 @@ function computeScore(correct, time){
 }
 
 </script>
-
-
 <script>
 // FIX chuẩn: Khi popup story/confirm/superquiz mở → ẩn poster ở sau
 (function(){
@@ -1483,8 +1532,6 @@ function computeScore(correct, time){
 }
 
 </script>
-
-
 <script>
 // === FIX 1: TẮT HOÀN TOÀN TỰ PHÁT NHẠC Ở ĐOẠN CUỐI ===
 document.addEventListener("DOMContentLoaded", ()=>{
@@ -1549,8 +1596,6 @@ function computeScore(correct, time){
 }
 
 </script>
-
-
 <script>
 // Disable yellow highlight in story
 (function(){
@@ -1572,19 +1617,12 @@ function computeScore(correct, time){
 }
 
 </script>
-
-
 <style>
 body {
     background-attachment: fixed !important;
     background-position: center bottom !important;
 }
 </style>
-
-
-
-
-
 <script>
 // Fully disable highlight
 window.updateHighlight = function(){};
@@ -1601,8 +1639,6 @@ function computeScore(correct, time){
 }
 
 </script>
-
-
 <script>
 // Stop story audio when skipping
 document.addEventListener("DOMContentLoaded", ()=>{
@@ -1628,14 +1664,11 @@ function computeScore(correct, time){
 }
 
 </script>
-
-
 <style>
 #storyText p {
     background: transparent !important;
 }
 </style>
-
 <script>
 // Hard-disable highlight
 window.updateHighlight = function(){};
@@ -1658,8 +1691,6 @@ function computeScore(correct, time){
 }
 
 </script>
-
-
 <!-- FIREBASE LEADERBOARD -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
@@ -1759,91 +1790,6 @@ function computeScore(correct, time){
 }
 
 </script>
-<!-- LEADERBOARD TABLE -->
-<div id="leaderboard" style="display:none" style="margin-top:30px;">
-  <h2>Bảng xếp hạng TOP 50</h2>
-  <table border="1" width="100%">
-    <thead>
-      <tr>
-        <th>Hạng</th><th>Tên</th>
-        <th>Lớp</th>
-        <th>Trường</th>
-        <th>Điểm</th>
-        <th>Thời gian</th>
-      </tr>
-    </thead>
-    <tbody id="leaderboardBody"></tbody>
-  </table>
-</div>
-
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-  import { 
-    getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit 
-  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBp-d-t6eQGvXTehgoPD-h9x8B1yUg2Lc",
-    authDomain: "an-toan-internet.firebaseapp.com",
-    projectId: "an-toan-internet",
-    storageBucket: "an-toan-internet.appspot.com",
-    messagingSenderId: "32947390909",
-    appId: "1:32947390909:web:71ec5d85e0b0cef78d4a5f",
-    measurementId: "G-X7HLNTRBZG"
-};
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  window.saveResult = async function(player){
-    await addDoc(collection(db,"leaderboard"), player);
-  };
-
-  window.loadLeaderboard = async function(){
-    const q = query(collection(db,"leaderboard"),
-      orderBy("correct","desc"),
-      orderBy("time","asc"),
-      limit(50)
-    );
-    const snap = await getDocs(q);
-    let rows="";
-    snap.forEach(d=>{
-      const x=d.data();
-      rows += `<tr><td>${x.name}</td><td>${x.class}</td><td>${x.school}</td><td>${x.correct}</td><td>${x.time}</td></tr>`;
-    });
-    const body=document.getElementById("leaderboardBody");
-    if(body) body.innerHTML=rows;
-  };
-</script>
-
-
-<!-- Leaderboard Section -->
-<div id="leaderboardBox" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-background:white; padding:20px; border-radius:12px; width:90%; max-width:400px; box-shadow:0 0 20px rgba(0,0,0,0.3); z-index:99999;">
-  <h3 style="margin-top:0; text-align:center;">🏆 TOP 50</h3>
-  <table style="width:100%; border-collapse:collapse; font-size:14px;">
-    <thead>
-      <tr>
-        <th>Tên</th><th>Lớp</th><th>Trường</th><th>Đúng</th><th>Thời gian</th>
-      </tr>
-    </thead>
-    <tbody id="leaderboardBody"></tbody>
-  </table>
-  <button onclick="document.getElementById('leaderboardBox').style.display='none'"
-    style="margin-top:15px; width:100%; padding:8px; border:none; border-radius:8px; background:#007bff; color:white;">
-    Đóng
-  </button>
-</div>
-
-<button id="openLeaderboardBtn"
- onclick="document.getElementById('leaderboardBox').style.display='block'; loadLeaderboard();"
- style="position:fixed; bottom:20px; right:20px; padding:10px 14px; background:#ff9800; color:#fff; border:none; border-radius:50%; font-size:14px; z-index:9999;">
- 🏆
-</button>
-
-
 
 </body>
 </html>
-
